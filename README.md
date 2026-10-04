@@ -1,4 +1,4 @@
-# Variational Inference with Affine Mixture Distributions
+# Thesis Implementation
 
 Implementation accompanying the master's thesis **Going with the Flow: ODE-based Transport Maps for Reparameterization Gradients in Variational Inference with Affine Mixture Distributions**.
 
