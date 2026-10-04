@@ -1,0 +1,11 @@
+{
+  "job": [
+    "logZ_minus50",
+    "rosenbrock",
+    "score_function",
+    1
+  ],
+  "elapsed_s": 4.851032972335815,
+  "completed": true,
+  "steps_completed": 1000
+}

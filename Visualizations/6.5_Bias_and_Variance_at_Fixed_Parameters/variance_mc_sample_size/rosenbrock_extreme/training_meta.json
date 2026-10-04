@@ -1,0 +1,20 @@
+{
+  "target": "rosenbrock",
+  "target_Z": 1.0,
+  "dim": 2,
+  "chart": "cholesky",
+  "components": 5,
+  "estimator": "ode_transport",
+  "mc": 1024,
+  "lr": 0.005,
+  "n_steps": 1000,
+  "seed": 1,
+  "tag": "rosenbrock_extreme",
+  "diverged": false,
+  "stop_reason": "completed",
+  "steps_completed": 1000,
+  "total_s": 148.18172001838684,
+  "torch": "2.0.1",
+  "host": "Mac",
+  "log_Z": 0.0
+}

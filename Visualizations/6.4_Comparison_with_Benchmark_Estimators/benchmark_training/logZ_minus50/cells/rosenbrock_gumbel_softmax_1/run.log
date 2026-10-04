@@ -1,0 +1,21 @@
+[gumbel_softmax       seed 1]     0/1000 elbo=  -54.850 |g|=5.82
+[gumbel_softmax       seed 1]    50/1000 elbo=  -51.312 |g|=0.281
+[gumbel_softmax       seed 1]   100/1000 elbo=  -51.121 |g|=0.202
+[gumbel_softmax       seed 1]   150/1000 elbo=  -51.054 |g|=0.126
+[gumbel_softmax       seed 1]   200/1000 elbo=  -51.030 |g|=0.109
+[gumbel_softmax       seed 1]   250/1000 elbo=  -51.011 |g|=0.273
+[gumbel_softmax       seed 1]   300/1000 elbo=  -50.998 |g|=0.169
+[gumbel_softmax       seed 1]   350/1000 elbo=  -51.009 |g|=0.104
+[gumbel_softmax       seed 1]   400/1000 elbo=  -51.017 |g|=0.146
+[gumbel_softmax       seed 1]   450/1000 elbo=  -51.080 |g|=0.109
+[gumbel_softmax       seed 1]   500/1000 elbo=  -51.113 |g|=0.366
+[gumbel_softmax       seed 1]   550/1000 elbo=  -51.102 |g|=0.11
+[gumbel_softmax       seed 1]   600/1000 elbo=  -51.111 |g|=0.162
+[gumbel_softmax       seed 1]   650/1000 elbo=  -51.137 |g|=0.192
+[gumbel_softmax       seed 1]   700/1000 elbo=  -51.125 |g|=0.223
+[gumbel_softmax       seed 1]   750/1000 elbo=  -51.112 |g|=0.26
+[gumbel_softmax       seed 1]   800/1000 elbo=  -51.104 |g|=0.214
+[gumbel_softmax       seed 1]   850/1000 elbo=  -51.106 |g|=0.209
+[gumbel_softmax       seed 1]   900/1000 elbo=  -51.123 |g|=0.363
+[gumbel_softmax       seed 1]   950/1000 elbo=  -51.123 |g|=0.196
+  done in 6.8s -- completed

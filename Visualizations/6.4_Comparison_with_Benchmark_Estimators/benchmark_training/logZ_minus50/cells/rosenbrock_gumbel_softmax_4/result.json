@@ -1,0 +1,11 @@
+{
+  "job": [
+    "logZ_minus50",
+    "rosenbrock",
+    "gumbel_softmax",
+    4
+  ],
+  "elapsed_s": 7.0951008796691895,
+  "completed": true,
+  "steps_completed": 1000
+}

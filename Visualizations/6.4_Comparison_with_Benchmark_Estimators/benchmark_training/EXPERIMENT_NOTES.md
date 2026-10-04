@@ -1,0 +1,7 @@
+# Authorized Cholesky overnight rerun
+
+200 training runs: 100 two-dimensional, 20 unnormalized Rosenbrock at log Z=-50 only, 80 hybrid Rosenbrock dimension runs. All use explicit Cholesky, K=5 (also K=50 for 2D hierarchical mixture), M=8192, seeds 1–5, 1000 Adam steps, learning rate 0.02 cosine-decayed to 0.002. OTR uses linear DOPRI5 at tolerance 1e-5 for 2D/logZ, 1e-7 for dimension. Float32, two workers, one PyTorch thread each. Original runs are preserved. Source is frozen in source/gmvi. Plot PDFs/PNGs update per completed run in the three group folders.
+
+Solver follow-up: Rosenbrock extreme only, float64 Cholesky K=5, one DM training trajectory at lr=.005, M=1024, snapshots 50/250/1000. Same solver arms as original; 5000 independent gradient replicates per arm. Bias uses the dimension experiment definition: norm of mean gradient minus independent DM reference (40 chunks of 500 samples per component = 20000). Raw norm, no RK4 normalization; sampling error retained in CSV but omitted from figure as requested. Replicate count and measurement M match the dimension experiment, as explicitly requested. This is finite-reference discrepancy, not an exact bias oracle. Raw reference and solver gradients are saved.
+
+queue.log, progress.json and per-cell run.log/process.json track progress; completion.json reports completion. Failed cells retain their outputs. No automatic destructive retries.

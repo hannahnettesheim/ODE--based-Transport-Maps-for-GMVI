@@ -1,0 +1,11 @@
+{
+  "job": [
+    "comparison_2d",
+    "rosenbrock",
+    "exact_marginalization",
+    2
+  ],
+  "elapsed_s": 16.552781105041504,
+  "completed": true,
+  "steps_completed": 1000
+}

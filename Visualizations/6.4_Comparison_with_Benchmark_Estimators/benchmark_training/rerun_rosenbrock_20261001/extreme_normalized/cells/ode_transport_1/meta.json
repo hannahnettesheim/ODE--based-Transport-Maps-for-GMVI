@@ -1,0 +1,20 @@
+{
+  "target": "rosenbrock",
+  "target_Z": 1.0,
+  "dim": 2,
+  "chart": "cholesky",
+  "components": 5,
+  "estimator": "ode_transport",
+  "mc": 8192,
+  "lr": 0.02,
+  "n_steps": 1000,
+  "seed": 1,
+  "tag": "rosenbrock",
+  "diverged": false,
+  "stop_reason": "completed",
+  "steps_completed": 1000,
+  "total_s": 328.54235315322876,
+  "torch": "2.0.1",
+  "host": "eduroam-141-23-175-119.wlan.tu-berlin.de",
+  "log_Z": 0.0
+}

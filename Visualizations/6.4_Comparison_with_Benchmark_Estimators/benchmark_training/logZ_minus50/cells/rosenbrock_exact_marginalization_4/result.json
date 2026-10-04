@@ -1,0 +1,11 @@
+{
+  "job": [
+    "logZ_minus50",
+    "rosenbrock",
+    "exact_marginalization",
+    4
+  ],
+  "elapsed_s": 15.645230054855347,
+  "completed": true,
+  "steps_completed": 1000
+}

@@ -1,0 +1,20 @@
+{
+  "target": "hierarchical_mixture",
+  "target_Z": 1.0,
+  "dim": 2,
+  "chart": "cholesky",
+  "components": 5,
+  "estimator": "ode_transport",
+  "mc": 1024,
+  "lr": 0.005,
+  "n_steps": 1000,
+  "seed": 1,
+  "tag": "hier_k5",
+  "diverged": false,
+  "stop_reason": "completed",
+  "steps_completed": 1000,
+  "total_s": 111.54339694976807,
+  "torch": "2.0.1",
+  "host": "Mac",
+  "log_Z": 0.0
+}

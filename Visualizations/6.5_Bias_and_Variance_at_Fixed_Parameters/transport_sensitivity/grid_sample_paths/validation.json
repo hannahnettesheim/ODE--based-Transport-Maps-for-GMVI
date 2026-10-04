@@ -1,0 +1,11 @@
+{
+  "max_endpoint_difference_tighter_tolerance": [
+    2.1611742158149984e-07,
+    3.278819578626248e-05,
+    2.4503685755985967e-07
+  ],
+  "original_sample_difference_from_saved_full_batch": [
+    2.764732577069702e-07,
+    3.245720841862615e-07
+  ]
+}

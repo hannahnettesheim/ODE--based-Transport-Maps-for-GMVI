@@ -1,0 +1,11 @@
+{
+  "job": [
+    "comparison_2d",
+    "rosenbrock",
+    "gumbel_softmax",
+    4
+  ],
+  "elapsed_s": 7.102081060409546,
+  "completed": true,
+  "steps_completed": 1000
+}

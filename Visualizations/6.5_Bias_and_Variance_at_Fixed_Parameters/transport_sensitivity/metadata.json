@@ -1,0 +1,8 @@
+{
+  "seed": 2230889,
+  "replicate_index_zero_based": 889,
+  "draw_number": 890,
+  "gradient_norm": 1932.0444266391276,
+  "variance_fraction": 0.9697352286543335,
+  "source": "/Users/Hannah/UNI/Masterarbeit/Implementation/Visualisations/M_sweep_2d/overnight5000_20260907_231330/M_otr/rosenbrock_extreme/step_1000_M_16384"
+}

@@ -1,0 +1,7 @@
+{
+  "suite": "M_otr",
+  "replicates": 5000,
+  "reused_draws": 51700,
+  "reference_mc_per_component": 20000,
+  "source": "/Users/Hannah/UNI/Masterarbeit/Implementation/Visualisations/M_sweep_2d/variance_bias_selective1000_20260907_213305"
+}

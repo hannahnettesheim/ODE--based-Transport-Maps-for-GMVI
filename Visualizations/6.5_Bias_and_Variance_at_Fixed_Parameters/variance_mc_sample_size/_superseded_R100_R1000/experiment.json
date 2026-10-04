@@ -1,0 +1,166 @@
+{
+  "regimes": [
+    "banana",
+    "rosenbrock_extreme",
+    "hier_k5",
+    "hier_k50",
+    "funnel"
+  ],
+  "dim": 2,
+  "Ms": [
+    256,
+    1024,
+    4096,
+    16384
+  ],
+  "snapshot_M": 1024,
+  "snapshot_steps": [
+    50,
+    250,
+    1000
+  ],
+  "training_seed": 1,
+  "replicates": "1000 in selected cells; 100 otherwise",
+  "dm_reference_samples_per_component": 20000,
+  "dm_reference_chunks": 40,
+  "dm_chunk_samples": 500,
+  "lr": 0.005,
+  "optimizer": "adam",
+  "scheduler": "none",
+  "dtype": "float32",
+  "chart": "cholesky",
+  "init_scale": 0.5,
+  "solver": "dopri5",
+  "rtol": 1e-07,
+  "atol": 1e-07,
+  "funnel_sigma_v": 3.0,
+  "notes": "Pilot preserved. Extend all M at steps 250 and 1000 for banana, Rosenbrock and funnel. DM budget unchanged: 20000 per component. Same random streams, snapshots and estimator. Variance estimates conditioned on one training seed.",
+  "checkpoint_every_replicates": 50,
+  "reused_from": "/Users/Hannah/UNI/Masterarbeit/Implementation/Visualisations/M_sweep_2d/variance_bias_1000draws_20260907_183020",
+  "extended_cells": [
+    {
+      "regime": "banana",
+      "step": 1000,
+      "M": 1024
+    },
+    {
+      "regime": "banana",
+      "step": 1000,
+      "M": 16384
+    },
+    {
+      "regime": "banana",
+      "step": 1000,
+      "M": 256
+    },
+    {
+      "regime": "banana",
+      "step": 1000,
+      "M": 4096
+    },
+    {
+      "regime": "banana",
+      "step": 250,
+      "M": 1024
+    },
+    {
+      "regime": "banana",
+      "step": 250,
+      "M": 16384
+    },
+    {
+      "regime": "banana",
+      "step": 250,
+      "M": 256
+    },
+    {
+      "regime": "banana",
+      "step": 250,
+      "M": 4096
+    },
+    {
+      "regime": "rosenbrock_extreme",
+      "step": 1000,
+      "M": 1024
+    },
+    {
+      "regime": "rosenbrock_extreme",
+      "step": 1000,
+      "M": 16384
+    },
+    {
+      "regime": "rosenbrock_extreme",
+      "step": 1000,
+      "M": 256
+    },
+    {
+      "regime": "rosenbrock_extreme",
+      "step": 1000,
+      "M": 4096
+    },
+    {
+      "regime": "rosenbrock_extreme",
+      "step": 250,
+      "M": 1024
+    },
+    {
+      "regime": "rosenbrock_extreme",
+      "step": 250,
+      "M": 16384
+    },
+    {
+      "regime": "rosenbrock_extreme",
+      "step": 250,
+      "M": 256
+    },
+    {
+      "regime": "rosenbrock_extreme",
+      "step": 250,
+      "M": 4096
+    },
+    {
+      "regime": "funnel",
+      "step": 1000,
+      "M": 1024
+    },
+    {
+      "regime": "funnel",
+      "step": 1000,
+      "M": 16384
+    },
+    {
+      "regime": "funnel",
+      "step": 1000,
+      "M": 256
+    },
+    {
+      "regime": "funnel",
+      "step": 1000,
+      "M": 4096
+    },
+    {
+      "regime": "funnel",
+      "step": 250,
+      "M": 1024
+    },
+    {
+      "regime": "funnel",
+      "step": 250,
+      "M": 16384
+    },
+    {
+      "regime": "funnel",
+      "step": 250,
+      "M": 256
+    },
+    {
+      "regime": "funnel",
+      "step": 250,
+      "M": 4096
+    }
+  ],
+  "pilot_source": "/Users/Hannah/UNI/Masterarbeit/Implementation/Visualisations/M_sweep_2d/variance_bias_pilot100_20260907_201906",
+  "additional_raw_source": "/Users/Hannah/UNI/Masterarbeit/Implementation/Visualisations/M_sweep_2d/variance_bias_1000draws_20260907_183020",
+  "reused_selected_draws": 19100,
+  "remaining_draws": 4900
+}

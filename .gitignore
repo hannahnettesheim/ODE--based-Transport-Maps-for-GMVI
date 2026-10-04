@@ -1,0 +1,19 @@
+# Local environments
+.venv/
+venv/
+
+# Python and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Matplotlib font caches
+mpl_cache/
+matplotlib_cache/
+
+# macOS metadata
+.DS_Store
+._*

@@ -1,0 +1,84 @@
+[
+  {
+    "tag": "banana",
+    "target": "banana",
+    "benchmark_kwargs": {},
+    "parameters": {
+      "b": 0.5,
+      "sigma": 2.0
+    },
+    "xlim": [
+      -8.0,
+      8.0
+    ],
+    "ylim": [
+      -6.0,
+      30.0
+    ]
+  },
+  {
+    "tag": "hier_k5",
+    "target": "hierarchical_mixture",
+    "benchmark_kwargs": {},
+    "parameters": {
+      "n_groups": 5,
+      "per_group": 4,
+      "sigma": 0.25,
+      "rho": 0.6,
+      "n_modes": 20,
+      "R_inner": 1.0606601717798214,
+      "R_outer": 4.356455290078757
+    },
+    "xlim": [
+      -6.127437114715576,
+      7.099194049835205
+    ],
+    "ylim": [
+      -7.137955665588379,
+      7.206327438354492
+    ]
+  },
+  {
+    "tag": "funnel",
+    "target": "funnel",
+    "benchmark_kwargs": {
+      "dim": 2
+    },
+    "parameters": {
+      "_dim": 2,
+      "sigma_v": 3.0
+    },
+    "xlim": [
+      -15.392304845413264,
+      6.392304845413264
+    ],
+    "ylim": [
+      -18.49628352416896,
+      18.49628352416896
+    ]
+  },
+  {
+    "tag": "rosenbrock",
+    "target": "rosenbrock",
+    "benchmark_kwargs": {
+      "mu": 1.0,
+      "a": 0.05,
+      "b": 5.0
+    },
+    "parameters": {
+      "mu": 1.0,
+      "a": 0.05,
+      "b": 5.0,
+      "s1": 3.1622776601683795,
+      "s2": 0.31622776601683794
+    },
+    "xlim": [
+      -10.454451150103322,
+      12.454451150103322
+    ],
+    "ylim": [
+      -3.0,
+      158.11335345030997
+    ]
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "runs": 40,
+  "steps_per_run": 1000,
+  "all_completed": true,
+  "finite_training_elbo_and_grad_norm": true,
+  "finite_checkpoint_kl": true,
+  "explicit_extreme_target_in_both_experiments": true,
+  "source_hashes_match": true,
+  "pdf_and_png_outputs_present": true
+}

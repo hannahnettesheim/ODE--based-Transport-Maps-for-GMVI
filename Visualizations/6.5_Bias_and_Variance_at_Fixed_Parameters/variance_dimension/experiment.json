@@ -1,0 +1,33 @@
+{
+  "dimensions": [
+    5,
+    10,
+    20
+  ],
+  "hybrid_structure": "shared-root: n1=2,n2=n-1; Xi|X1 independent Normal(X1^2,1/(2b)), i>=2",
+  "mu": 1,
+  "a": 0.05,
+  "b": 5,
+  "reference_paper": "https://arxiv.org/abs/1903.09556",
+  "replicates": 5000,
+  "M": 1024,
+  "estimators": [
+    "DM",
+    "SF-none",
+    "ST",
+    "OTR"
+  ],
+  "rtol": 1e-07,
+  "atol": 1e-07,
+  "components": 5,
+  "lr": 0.005,
+  "snapshots": [
+    50,
+    250,
+    1000
+  ],
+  "snapshot_estimator": "OTR",
+  "reference_mc_per_component": 20000,
+  "dtype": "float32",
+  "note": "Total variance and variance per parameter reported; one training seed. No guarantee estimates stabilize at 5000 draws."
+}

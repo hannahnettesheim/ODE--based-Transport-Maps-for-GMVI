@@ -1,0 +1,20 @@
+{
+  "draw": 890,
+  "seed": 2230889,
+  "snapshot_step": 1000,
+  "mc": 16384,
+  "dtype": "float64",
+  "solver": "dopri5",
+  "rtol": 1e-10,
+  "atol": 1e-10,
+  "batch_gradient_norm": 10494.370566686983,
+  "mean_sample_gradient_norm": 10503.914730832508,
+  "median_sample_gradient_norm": 5.585231806363359,
+  "s0_gradient_norm": 171940553.79298618,
+  "s0_logit3_elbo_derivative": -104888374.80567503,
+  "s0_batch_contribution_norm": 10494.418566466442,
+  "s0_fraction_sum_norms": 0.9990959404555911,
+  "mean_sample_gradient_norm_without_s0": 9.496744001321003,
+  "reverse_validation_batch_max_abs": 3.2741809263825417e-11,
+  "reverse_validation_s0_max_abs": 1.4901161193847656e-07
+}

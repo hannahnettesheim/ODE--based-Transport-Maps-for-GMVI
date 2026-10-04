@@ -55,35 +55,34 @@ class GeneralizedMixture(nn.Module):
 
         # Reference distribution
         self.reference = reference if reference is not None else StandardNormal(dim)
-        assert self.reference.dim == dim, \
-            f"Reference dim {self.reference.dim} != latent dim {dim}"
+        assert (
+            self.reference.dim == dim
+        ), f"Reference dim {self.reference.dim} != latent dim {dim}"
 
         # Mixture weights (unnormalized log-weights)
         self.log_weights = nn.Parameter(torch.zeros(n_components))
 
         # One learnable affine component per mixture element
-        self.components = nn.ModuleList([
-            AffineComponent(
-                dim=dim,
-                param_type=param_type,
-                init_scale=init_scale,
-            )
-            for _ in range(n_components)
-        ])
+        self.components = nn.ModuleList(
+            [
+                AffineComponent(
+                    dim=dim,
+                    param_type=param_type,
+                    init_scale=init_scale,
+                )
+                for _ in range(n_components)
+            ]
+        )
 
         # Spread initial shifts so components start apart
         with torch.no_grad():
             for i, comp in enumerate(self.components):
                 comp.a.data = torch.randn(dim) * init_scale
 
-    # ── Weight access ────────────────────────────────────────────────────────
-
     @property
     def weights(self) -> Tensor:
         """Normalized mixture weights. Shape: (K,)"""
         return torch.softmax(self.log_weights, dim=0)
-
-    # ── Density ──────────────────────────────────────────────────────────────
 
     def component_log_probs(self, z: Tensor) -> Tensor:
         """
@@ -99,11 +98,9 @@ class GeneralizedMixture(nn.Module):
         """
         Log mixture density: log q(z) = logsumexp_i [log w_i + log q_i(z)]
         """
-        log_comp = self.component_log_probs(z)                  # (N, K)
-        log_w = torch.log_softmax(self.log_weights, dim=0)      # (K,)
-        return torch.logsumexp(log_w + log_comp, dim=1)         # (N,)
-
-    # ── Sampling ─────────────────────────────────────────────────────────────
+        log_comp = self.component_log_probs(z)  # (N, K)
+        log_w = torch.log_softmax(self.log_weights, dim=0)  # (K,)
+        return torch.logsumexp(log_w + log_comp, dim=1)  # (N,)
 
     def sample(self, n: int) -> Tuple[Tensor, Tensor]:
         """
@@ -111,11 +108,11 @@ class GeneralizedMixture(nn.Module):
         """
         with torch.no_grad():
             k = dist.Categorical(probs=self.weights).sample((n,))  # (N,)
-            x = self.reference.sample(n)                           # (N, D)
+            x = self.reference.sample(n)  # (N, D)
 
             z = torch.zeros(n, self.D, device=x.device)
             for i, comp in enumerate(self.components):
-                mask = (k == i)
+                mask = k == i
                 if mask.any():
                     z[mask] = comp.forward(x[mask])
 
@@ -136,13 +133,11 @@ class GeneralizedMixture(nn.Module):
 
         z = torch.zeros(n, self.D, device=self.log_weights.device)
         for i, comp in enumerate(self.components):
-            mask = (k == i)
+            mask = k == i
             if mask.any():
                 z[mask] = comp.forward(x[mask])  # differentiable w.r.t. a_i, A_i
 
         return z, k
-
-    # ── Convenience ──────────────────────────────────────────────────────────
 
     @property
     def means(self) -> Tensor:
@@ -166,8 +161,6 @@ class GeneralizedMixture(nn.Module):
         )
 
 
-# ── Backward-compatible GaussianMixture wrapper ──────────────────────────────
-
 class GaussianMixture(GeneralizedMixture):
     """
     Classical Gaussian mixture: GeneralizedMixture with N(0,I) reference
@@ -189,9 +182,7 @@ class GaussianMixture(GeneralizedMixture):
     @property
     def scales(self) -> Tensor:
         """Diagonal std devs for each component. Shape: (K, D)."""
-        return torch.stack([
-            torch.exp(c.log_diag) for c in self.components
-        ])
+        return torch.stack([torch.exp(c.log_diag) for c in self.components])
 
     @property
     def log_scales(self) -> Tensor:

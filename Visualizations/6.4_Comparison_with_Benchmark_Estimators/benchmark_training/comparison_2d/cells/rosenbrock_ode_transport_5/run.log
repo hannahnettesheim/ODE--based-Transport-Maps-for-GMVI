@@ -1,0 +1,21 @@
+[ode_transport        seed 5]     0/1000 elbo=   -3.270 |g|=4.43
+[ode_transport        seed 5]    50/1000 elbo=   -1.137 |g|=0.33
+[ode_transport        seed 5]   100/1000 elbo=   -0.945 |g|=0.225
+[ode_transport        seed 5]   150/1000 elbo=   -0.840 |g|=25.3
+[ode_transport        seed 5]   200/1000 elbo=   -0.843 |g|=0.204
+[ode_transport        seed 5]   250/1000 elbo=   -0.794 |g|=0.148
+[ode_transport        seed 5]   300/1000 elbo=   -0.788 |g|=0.32
+[ode_transport        seed 5]   350/1000 elbo=   -0.771 |g|=0.274
+[ode_transport        seed 5]   400/1000 elbo=   -0.747 |g|=0.189
+[ode_transport        seed 5]   450/1000 elbo=   -0.744 |g|=0.264
+[ode_transport        seed 5]   500/1000 elbo=   -0.737 |g|=0.233
+[ode_transport        seed 5]   550/1000 elbo=   -0.787 |g|=1.62
+[ode_transport        seed 5]   600/1000 elbo=   -0.788 |g|=0.567
+[ode_transport        seed 5]   650/1000 elbo=   -0.763 |g|=0.724
+[ode_transport        seed 5]   700/1000 elbo=   -0.736 |g|=0.292
+[ode_transport        seed 5]   750/1000 elbo=   -0.742 |g|=0.263
+[ode_transport        seed 5]   800/1000 elbo=   -0.724 |g|=0.364
+[ode_transport        seed 5]   850/1000 elbo=   -0.726 |g|=0.203
+[ode_transport        seed 5]   900/1000 elbo=   -0.734 |g|=2.1
+[ode_transport        seed 5]   950/1000 elbo=   -0.714 |g|=0.364
+  done in 1290.3s -- completed

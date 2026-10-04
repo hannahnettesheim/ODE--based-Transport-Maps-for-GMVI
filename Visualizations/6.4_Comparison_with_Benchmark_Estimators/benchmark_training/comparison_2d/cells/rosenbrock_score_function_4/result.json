@@ -1,0 +1,11 @@
+{
+  "job": [
+    "comparison_2d",
+    "rosenbrock",
+    "score_function",
+    4
+  ],
+  "elapsed_s": 5.19861626625061,
+  "completed": true,
+  "steps_completed": 1000
+}

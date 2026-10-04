@@ -1,35 +1,7 @@
-"""
-Learnable affine transformations T_i(x) = a_i + A_i x for generalized mixture components.
+"""Learnable affine maps T(x) = a + Ax with symmetric positive-definite A.
 
-Each component maintains:
-  - a_i:  shift vector  (n,)
-  - A_i:  symmetric positive-definite matrix (n, n)
-
-The log-abs-det-Jacobian of T_i is log|det A_i|, so the component density is:
-    log q_i(x) = log q_ref(A_i^{-1}(x - a_i)) - log|det A_i|
-
-Three parameterizations of A_i are supported (chosen at construction), each
-guaranteeing A_i ∈ S++^n (symmetric positive-definite):
-
-  'diagonal'         – A_i = diag(exp(s_i)), s_i ∈ R^n. Trivially symmetric
-                        positive-definite. Recovers classical Gaussian mixture
-                        when ref = N(0,I).
-
-  'eigenvaluedecomp'  – A_i = Q_i diag(exp(s_i)) Q_i^T, where Q_i is orthogonal
-                        (the eigenvectors) and exp(s_i) are positive eigenvalue
-                        scales. Q_i is parametrized via a skew-symmetric
-                        generator (Cayley map, or closed-form rotation in 2-D).
-                        log|det A_i| = sum(s_i); A_i^{-1} = Q_i diag(exp(-s_i)) Q_i^T;
-                        log(A_i) = Q_i diag(s_i) Q_i^T — all exact and cheap.
-
-  'matrixexponential' – A_i = exp(S_i), where S_i is an unconstrained symmetric
-                        matrix (its n(n+1)/2 upper-triangular entries are free
-                        parameters). The exponential of a symmetric matrix is
-                        always SPD, so this maps freely onto S++^n with no
-                        orthogonality constraint to enforce.
-                        log(A_i) = S_i exactly; log|det A_i| = trace(S_i);
-                        A_i^{-1} = exp(-S_i).
-"""
+Component log density is log q_ref(A^{-1}(x-a)) - log|det A|.
+Supported parameterizations are documented in gmvi.choices."""
 
 import torch
 import torch.nn as nn
@@ -38,7 +10,11 @@ from typing import Literal
 import math
 
 
-AffineParamType = Literal["diagonal", "eigenvaluedecomp", "matrixexponential"]
+from gmvi.choices import Chart
+
+AffineParamType = Chart
+"""Alias kept for the existing call sites. The list itself lives in
+gmvi.choices.Chart -- do not re-spell it here."""
 
 
 class AffineComponent(nn.Module):
@@ -67,15 +43,11 @@ class AffineComponent(nn.Module):
         # Matrix A_i parameterization
         if param_type == "diagonal":
             # A_i = diag(exp(s_i)), log scale parameters
-            self.log_diag = nn.Parameter(
-                torch.full((dim,), math.log(init_scale))
-            )
+            self.log_diag = nn.Parameter(torch.full((dim,), math.log(init_scale)))
 
         elif param_type == "eigenvaluedecomp":
             # A = Q diag(exp(s)) Q^T, Q orthogonal via a skew-symmetric generator.
-            self.log_diag = nn.Parameter(
-                torch.full((dim,), math.log(init_scale))
-            )
+            self.log_diag = nn.Parameter(torch.full((dim,), math.log(init_scale)))
             n_skew = dim * (dim - 1) // 2
             self.skew_raw = nn.Parameter(torch.zeros(n_skew))
 
@@ -90,10 +62,25 @@ class AffineComponent(nn.Module):
                 is_diag = triu_idx[0] == triu_idx[1]
                 self.sym_raw[is_diag] = math.log(init_scale)
 
+        elif param_type == "cholesky":
+            # A = L L^T with L lower triangular and L_jj = exp(d_j) > 0.
+            # Stored as the n(n+1)/2 lower-triangular (incl. diagonal) entries.
+            # A is symmetric positive definite, which matters beyond convenience:
+            # T_i(x) = a_i + A_i x is the gradient of a convex function only when
+            # A_i is symmetric, and that is what makes the linear interpolation
+            # the W_2 geodesic (Brenier). A bare Cholesky factor used as the map
+            # would not have this property.
+            # Initialized so L = sqrt(init_scale) * I, i.e. A = init_scale * I --
+            # the SAME starting distribution as the other charts, so that a
+            # parametrization ablation measures the chart and nothing else.
+            self.chol_raw = nn.Parameter(torch.zeros(dim * (dim + 1) // 2))
+            with torch.no_grad():
+                tril_idx = torch.tril_indices(dim, dim, offset=0)
+                is_diag = tril_idx[0] == tril_idx[1]
+                self.chol_raw[is_diag] = 0.5 * math.log(init_scale)
+
         else:
             raise ValueError(f"Unknown param_type '{param_type}'")
-
-    # ── Matrix access ────────────────────────────────────────────────────────
 
     def _get_Q(self) -> Tensor:
         """Orthogonal Q from skew_raw.
@@ -106,10 +93,12 @@ class AffineComponent(nn.Module):
             c, s = torch.cos(θ), torch.sin(θ)
             return torch.stack([c, -s, s, c]).reshape(2, 2)
 
-        idx = torch.triu_indices(self.dim, self.dim, offset=1,
-                                 device=self.skew_raw.device)
-        S = torch.zeros(self.dim, self.dim, dtype=self.skew_raw.dtype,
-                        device=self.skew_raw.device)
+        idx = torch.triu_indices(
+            self.dim, self.dim, offset=1, device=self.skew_raw.device
+        )
+        S = torch.zeros(
+            self.dim, self.dim, dtype=self.skew_raw.dtype, device=self.skew_raw.device
+        )
         S = S.index_put((idx[0], idx[1]), self.skew_raw)
         S = S - S.T
         I = torch.eye(self.dim, dtype=S.dtype, device=S.device)
@@ -118,13 +107,28 @@ class AffineComponent(nn.Module):
 
     def _get_S(self) -> Tensor:
         """Symmetric generator S from sym_raw, for param_type='matrixexponential'."""
-        idx = torch.triu_indices(self.dim, self.dim, offset=0,
-                                 device=self.sym_raw.device)
-        S = torch.zeros(self.dim, self.dim, dtype=self.sym_raw.dtype,
-                        device=self.sym_raw.device)
+        idx = torch.triu_indices(
+            self.dim, self.dim, offset=0, device=self.sym_raw.device
+        )
+        S = torch.zeros(
+            self.dim, self.dim, dtype=self.sym_raw.dtype, device=self.sym_raw.device
+        )
         S = S.index_put((idx[0], idx[1]), self.sym_raw)
         diag = torch.diag(torch.diagonal(S))
         return S + S.T - diag  # symmetrize without double-counting the diagonal
+
+    def _get_L(self) -> Tensor:
+        """Lower-triangular Cholesky factor L from chol_raw, with L_jj = exp(d_j)."""
+        idx = torch.tril_indices(
+            self.dim, self.dim, offset=0, device=self.chol_raw.device
+        )
+        L = torch.zeros(
+            self.dim, self.dim, dtype=self.chol_raw.dtype, device=self.chol_raw.device
+        )
+        L = L.index_put((idx[0], idx[1]), self.chol_raw)
+        # exponentiate the diagonal so that L_jj > 0 without a constraint
+        d = torch.diagonal(L)
+        return L - torch.diag(d) + torch.diag(torch.exp(d))
 
     def get_A(self) -> Tensor:
         """Return the (n, n) SPD matrix A_i."""
@@ -138,6 +142,10 @@ class AffineComponent(nn.Module):
         elif self.param_type == "matrixexponential":
             return torch.matrix_exp(self._get_S())
 
+        elif self.param_type == "cholesky":
+            L = self._get_L()
+            return L @ L.T
+
     def get_A_inv(self) -> Tensor:
         """Return A_i^{-1}. Closed-form for all supported param_types."""
         if self.param_type == "diagonal":
@@ -147,6 +155,10 @@ class AffineComponent(nn.Module):
             return Q @ torch.diag(torch.exp(-self.log_diag)) @ Q.T
         elif self.param_type == "matrixexponential":
             return torch.matrix_exp(-self._get_S())
+        elif self.param_type == "cholesky":
+            # (L L^T)^{-1} via two triangular solves; cheaper and better
+            # conditioned than a general inverse.
+            return torch.cholesky_inverse(self._get_L(), upper=False)
 
     def get_log_A(self) -> Tensor:
         """
@@ -167,6 +179,17 @@ class AffineComponent(nn.Module):
         elif self.param_type == "matrixexponential":
             return self._get_S()
 
+        elif self.param_type == "cholesky":
+            raise NotImplementedError(
+                "log(A) is not available in closed form for param_type='cholesky': "
+                "A = L L^T gives no free matrix logarithm, and computing one via "
+                "eigh is unsafe here because the initialization A = init_scale * I "
+                "has a fully degenerate spectrum, where eigh's backward contains "
+                "1/(sigma_i - sigma_j) terms. Use param_type='matrixexponential' "
+                "for the geometric path, where log(A) = S by construction. "
+                "The cholesky chart is intended for the linear path only."
+            )
+
     def log_abs_det(self) -> Tensor:
         """
         log|det A_i|  — scalar.
@@ -178,8 +201,13 @@ class AffineComponent(nn.Module):
             return self.log_diag.sum()
         elif self.param_type == "matrixexponential":
             return torch.diagonal(self._get_S()).sum()
-
-    # ── Forward map T_i(x) = a_i + A_i x ────────────────────────────────────
+        elif self.param_type == "cholesky":
+            # log det(L L^T) = 2 log det L = 2 * sum_j d_j, exact from the
+            # parameters: the diagonal entries of chol_raw are the d_j.
+            idx = torch.tril_indices(
+                self.dim, self.dim, offset=0, device=self.chol_raw.device
+            )
+            return 2.0 * self.chol_raw[idx[0] == idx[1]].sum()
 
     def forward(self, x: Tensor) -> Tensor:
         """
@@ -213,9 +241,9 @@ class AffineComponent(nn.Module):
         Returns:
             log_prob: (N,)
         """
-        x = self.inverse(z)               # (N, n) pre-image
-        log_ref = ref_log_prob_fn(x)      # (N,)
-        log_jac = self.log_abs_det()      # scalar (positive = expansion)
+        x = self.inverse(z)  # (N, n) pre-image
+        log_ref = ref_log_prob_fn(x)  # (N,)
+        log_jac = self.log_abs_det()  # scalar (positive = expansion)
         return log_ref - log_jac
 
     def rsample(self, n: int, ref_sample_fn) -> Tensor:
@@ -223,7 +251,7 @@ class AffineComponent(nn.Module):
         Reparameterized sample: z = a_i + A_i x,  x ~ Q_ref.
         Differentiable w.r.t. a_i and A_i.
         """
-        x = ref_sample_fn(n)              # (N, n)
+        x = ref_sample_fn(n)  # (N, n)
         return self.forward(x)
 
     def extra_repr(self) -> str:

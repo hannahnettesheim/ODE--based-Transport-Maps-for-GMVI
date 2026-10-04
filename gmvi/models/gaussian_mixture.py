@@ -33,7 +33,10 @@ class GaussianMixture(nn.Module):
         self.log_weights = nn.Parameter(torch.zeros(n_components))
         self.means = nn.Parameter(torch.randn(n_components, latent_dim) * init_scale)
         self.log_scales = nn.Parameter(
-            torch.full((n_components, latent_dim), fill_value=torch.log(torch.tensor(init_scale)))
+            torch.full(
+                (n_components, latent_dim),
+                fill_value=torch.log(torch.tensor(init_scale)),
+            )
         )
 
     @property
@@ -56,18 +59,18 @@ class GaussianMixture(nn.Module):
             log_prob: Tensor of shape (N,)
         """
         # z: (N, D) -> (N, 1, D) for broadcasting with (K, D)
-        z_exp = z.unsqueeze(1)                          # (N, 1, D)
-        means = self.means.unsqueeze(0)                 # (1, K, D)
-        scales = self.scales.unsqueeze(0)               # (1, K, D)
+        z_exp = z.unsqueeze(1)  # (N, 1, D)
+        means = self.means.unsqueeze(0)  # (1, K, D)
+        scales = self.scales.unsqueeze(0)  # (1, K, D)
 
         # Component log probs: (N, K)
         component_log_prob = dist.Normal(means, scales).log_prob(z_exp).sum(-1)
 
         # log pi_k + log N(z | mu_k, sigma_k)
         log_w = torch.log_softmax(self.log_weights, dim=0)  # (K,)
-        log_mix = log_w.unsqueeze(0) + component_log_prob   # (N, K)
+        log_mix = log_w.unsqueeze(0) + component_log_prob  # (N, K)
 
-        return torch.logsumexp(log_mix, dim=1)              # (N,)
+        return torch.logsumexp(log_mix, dim=1)  # (N,)
 
     def sample(self, n: int) -> Tuple[Tensor, Tensor]:
         """
@@ -83,8 +86,8 @@ class GaussianMixture(nn.Module):
         k = dist.Categorical(probs=self.weights).sample((n,))  # (N,)
 
         # Sample from selected components
-        selected_means = self.means[k]       # (N, D)
-        selected_scales = self.scales[k]     # (N, D)
+        selected_means = self.means[k]  # (N, D)
+        selected_scales = self.scales[k]  # (N, D)
         eps = torch.randn_like(selected_means)
         z = selected_means + selected_scales * eps
         return z, k

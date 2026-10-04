@@ -1,0 +1,11 @@
+{
+  "job": [
+    "comparison_2d",
+    "rosenbrock",
+    "ode_transport",
+    5
+  ],
+  "elapsed_s": 1290.2940652370453,
+  "completed": true,
+  "steps_completed": 1000
+}

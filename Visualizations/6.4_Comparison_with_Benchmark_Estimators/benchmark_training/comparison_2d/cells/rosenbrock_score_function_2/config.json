@@ -1,0 +1,53 @@
+{
+  "target": "rosenbrock",
+  "target_kwargs": {
+    "mu": 1.0,
+    "a": 0.05,
+    "b": 5.0
+  },
+  "target_Z": 1.0,
+  "dim": 2,
+  "components": 5,
+  "chart": "cholesky",
+  "init_scale": 0.5,
+  "reference": "normal",
+  "estimator": "score_function",
+  "estimator_kwargs": {
+    "baseline": "none"
+  },
+  "mc_samples": 8192,
+  "n_steps": 1000,
+  "lr": 0.02,
+  "optimizer": "adam",
+  "momentum": 0.9,
+  "scheduler": "cosine",
+  "scheduler_eta_min_ratio": 0.1,
+  "record_every": 1,
+  "var_at_steps": null,
+  "var_every": 0,
+  "geometry_every": 0,
+  "probe_elbo": true,
+  "probe_grad_norm": true,
+  "checkpoint_every": null,
+  "n_checkpoints": 5,
+  "checkpoint_fracs": [
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1.0
+  ],
+  "probe_elbo_highres": true,
+  "probe_wasserstein": false,
+  "probe_geometry": true,
+  "probe_params": true,
+  "n_eval": 20000,
+  "n_wasserstein": 4096,
+  "n_projections": 256,
+  "var_chunk": 64,
+  "seed": 2,
+  "tag": "rosenbrock",
+  "verbose": true,
+  "log_every": 50,
+  "stop_on_nonfinite": true
+}

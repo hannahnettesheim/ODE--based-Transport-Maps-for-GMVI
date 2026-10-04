@@ -1,0 +1,21 @@
+[exact_marginalization seed 3]     0/1000 elbo=   -3.012 |g|=4.75
+[exact_marginalization seed 3]    50/1000 elbo=   -1.176 |g|=0.291
+[exact_marginalization seed 3]   100/1000 elbo=   -0.975 |g|=0.185
+[exact_marginalization seed 3]   150/1000 elbo=   -0.828 |g|=0.135
+[exact_marginalization seed 3]   200/1000 elbo=   -0.761 |g|=0.159
+[exact_marginalization seed 3]   250/1000 elbo=   -0.715 |g|=0.127
+[exact_marginalization seed 3]   300/1000 elbo=   -0.682 |g|=0.114
+[exact_marginalization seed 3]   350/1000 elbo=   -0.656 |g|=0.0991
+[exact_marginalization seed 3]   400/1000 elbo=   -0.635 |g|=0.124
+[exact_marginalization seed 3]   450/1000 elbo=   -0.620 |g|=0.0972
+[exact_marginalization seed 3]   500/1000 elbo=   -0.608 |g|=0.161
+[exact_marginalization seed 3]   550/1000 elbo=   -0.600 |g|=0.0518
+[exact_marginalization seed 3]   600/1000 elbo=   -0.591 |g|=0.0977
+[exact_marginalization seed 3]   650/1000 elbo=   -0.585 |g|=0.194
+[exact_marginalization seed 3]   700/1000 elbo=   -0.586 |g|=0.0908
+[exact_marginalization seed 3]   750/1000 elbo=   -0.581 |g|=0.214
+[exact_marginalization seed 3]   800/1000 elbo=   -0.577 |g|=0.0904
+[exact_marginalization seed 3]   850/1000 elbo=   -0.571 |g|=0.0594
+[exact_marginalization seed 3]   900/1000 elbo=   -0.573 |g|=0.116
+[exact_marginalization seed 3]   950/1000 elbo=   -0.571 |g|=0.0846
+  done in 16.0s -- completed

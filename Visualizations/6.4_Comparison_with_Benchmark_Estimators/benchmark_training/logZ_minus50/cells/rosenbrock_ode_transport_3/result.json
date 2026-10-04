@@ -1,0 +1,11 @@
+{
+  "job": [
+    "logZ_minus50",
+    "rosenbrock",
+    "ode_transport",
+    3
+  ],
+  "elapsed_s": 336.4341299533844,
+  "completed": true,
+  "steps_completed": 1000
+}

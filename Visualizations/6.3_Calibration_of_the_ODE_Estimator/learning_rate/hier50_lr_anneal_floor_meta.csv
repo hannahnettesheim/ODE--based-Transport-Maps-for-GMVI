@@ -1,0 +1,11 @@
+target,dim,chart,components,estimator,mc,lr,n_steps,seed,tag,diverged,stop_reason,steps_completed,total_s,torch,host,log_Z,schedule,sched,eta_min_ratio
+hierarchical_mixture,,cholesky,50,ode_transport,2048,0.001,2000,1,lr0.001|strict,False,completed,2000,970.0154738426,2.0.1,Mac,0,strict,none,1.0
+hierarchical_mixture,,cholesky,50,ode_transport,2048,0.001,2000,1,lr0.001|floor0.1,False,completed,2000,966.7530038357,2.0.1,Mac,0,anneal_floor_0.1,cosine,0.1
+hierarchical_mixture,,cholesky,50,ode_transport,2048,0.005,2000,1,lr0.005|strict,False,completed,2000,1321.4002423286,2.0.1,Mac,0,strict,none,1.0
+hierarchical_mixture,,cholesky,50,ode_transport,2048,0.005,2000,1,lr0.005|floor0.1,False,completed,2000,1262.3758938313,2.0.1,Mac,0,anneal_floor_0.1,cosine,0.1
+hierarchical_mixture,,cholesky,50,ode_transport,2048,0.02,2000,1,lr0.02|strict,False,completed,2000,1426.1982679367,2.0.1,Mac,0,strict,none,1.0
+hierarchical_mixture,,cholesky,50,ode_transport,2048,0.01,2000,1,lr0.01|strict,False,completed,2000,1288.8659090996,2.0.1,Mac,0,strict,none,1.0
+hierarchical_mixture,,cholesky,50,ode_transport,2048,0.02,2000,1,lr0.02|floor0.1,False,completed,2000,1385.325548172,2.0.1,Mac,0,anneal_floor_0.1,cosine,0.1
+hierarchical_mixture,,cholesky,50,ode_transport,2048,0.01,2000,1,lr0.01|floor0.1,False,completed,2000,1258.2415180206,2.0.1,Mac,0,anneal_floor_0.1,cosine,0.1
+hierarchical_mixture,,cholesky,50,ode_transport,2048,0.05,2000,1,lr0.05|strict,False,completed,2000,1628.2581586838,2.0.1,Mac,0,strict,none,1.0
+hierarchical_mixture,,cholesky,50,ode_transport,2048,0.05,2000,1,lr0.05|floor0.1,False,completed,2000,1486.3249499798,2.0.1,Mac,0,anneal_floor_0.1,cosine,0.1

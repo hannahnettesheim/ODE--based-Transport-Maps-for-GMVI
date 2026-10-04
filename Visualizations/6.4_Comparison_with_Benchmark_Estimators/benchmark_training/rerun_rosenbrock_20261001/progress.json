@@ -1,0 +1,326 @@
+{
+  "finished": 40,
+  "total": 40,
+  "results": [
+    {
+      "job": [
+        "extreme_normalized",
+        "exact_marginalization",
+        1
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "exact_marginalization",
+        1
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "score_function",
+        1
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "score_function",
+        1
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "gumbel_softmax",
+        1
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "gumbel_softmax",
+        1
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "ode_transport",
+        1
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "ode_transport",
+        1
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "exact_marginalization",
+        2
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "exact_marginalization",
+        2
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "score_function",
+        2
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "score_function",
+        2
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "gumbel_softmax",
+        2
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "gumbel_softmax",
+        2
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "ode_transport",
+        2
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "ode_transport",
+        2
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "exact_marginalization",
+        3
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "exact_marginalization",
+        3
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "score_function",
+        3
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "score_function",
+        3
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "gumbel_softmax",
+        3
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "gumbel_softmax",
+        3
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "ode_transport",
+        3
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "ode_transport",
+        3
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "exact_marginalization",
+        4
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "exact_marginalization",
+        4
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "score_function",
+        4
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "score_function",
+        4
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "gumbel_softmax",
+        4
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "gumbel_softmax",
+        4
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "ode_transport",
+        4
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "ode_transport",
+        4
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "exact_marginalization",
+        5
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "exact_marginalization",
+        5
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "score_function",
+        5
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "score_function",
+        5
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "gumbel_softmax",
+        5
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "gumbel_softmax",
+        5
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_logZ_minus50",
+        "ode_transport",
+        5
+      ],
+      "exit_code": 0
+    },
+    {
+      "job": [
+        "extreme_normalized",
+        "ode_transport",
+        5
+      ],
+      "exit_code": 0
+    }
+  ]
+}

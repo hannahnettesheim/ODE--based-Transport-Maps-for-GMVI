@@ -1,0 +1,21 @@
+[score_function       seed 2]     0/1000 elbo=  -55.674 |g|=9.17
+[score_function       seed 2]    50/1000 elbo=  -51.517 |g|=2
+[score_function       seed 2]   100/1000 elbo=  -51.327 |g|=3.82
+[score_function       seed 2]   150/1000 elbo=  -51.254 |g|=3.89
+[score_function       seed 2]   200/1000 elbo=  -51.146 |g|=6.18
+[score_function       seed 2]   250/1000 elbo=  -51.092 |g|=6.53
+[score_function       seed 2]   300/1000 elbo=  -51.119 |g|=3.37
+[score_function       seed 2]   350/1000 elbo=  -51.093 |g|=6.17
+[score_function       seed 2]   400/1000 elbo=  -51.026 |g|=3.38
+[score_function       seed 2]   450/1000 elbo=  -51.034 |g|=4.82
+[score_function       seed 2]   500/1000 elbo=  -51.010 |g|=4.84
+[score_function       seed 2]   550/1000 elbo=  -50.982 |g|=2.82
+[score_function       seed 2]   600/1000 elbo=  -51.019 |g|=13.3
+[score_function       seed 2]   650/1000 elbo=  -51.004 |g|=5.42
+[score_function       seed 2]   700/1000 elbo=  -50.942 |g|=2.73
+[score_function       seed 2]   750/1000 elbo=  -50.935 |g|=6.36
+[score_function       seed 2]   800/1000 elbo=  -50.938 |g|=6.72
+[score_function       seed 2]   850/1000 elbo=  -50.929 |g|=3.81
+[score_function       seed 2]   900/1000 elbo=  -50.920 |g|=3.17
+[score_function       seed 2]   950/1000 elbo=  -50.931 |g|=5.07
+  done in 5.1s -- completed
