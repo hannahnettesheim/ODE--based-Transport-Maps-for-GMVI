@@ -2,7 +2,7 @@
 
 Implementation accompanying the master's thesis **Going with the Flow: ODE-based Transport Maps for Reparameterization Gradients in Variational Inference with Affine Mixture Distributions**.
 
-The code fits mixture distributions of affiely transformed reference distributions and compares four main gradient estimators:
+The code fits mixture distributions of affinily transformed reference distributions and compares four main gradient estimators:
 
 - **DM:** direct Monte Carlo estimation with exact marginalization over the mixture components.
 - **SF:** the score-function estimator.
@@ -116,6 +116,7 @@ The output contains three checkpoint rows and reports `Completed steps: 50`. The
 - `snapshots`: saved model parameter states indexed by optimization step.
 - `meta`: run metadata, including completion and divergence information.
 
+The plot is an example how the results can be plotted.
 The example keeps its results in memory. To save the tables, append:
 
 ```python
