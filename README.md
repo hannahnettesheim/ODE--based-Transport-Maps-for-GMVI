@@ -58,6 +58,7 @@ Save the following as `minimal_example.py` next to this README, then run `python
 This example fits a five-component mixture to the two-dimensional Banana target using ODE transport. It performs 50 Adam steps and evaluates the ELBO and KL divergence at steps 0, 25, and 50. These reduced settings demonstrate the API; they are not the full thesis experiment settings.
 
 ```python
+import matplotlib.pyplot as plt
 import torch
 from gmvi.experiments.trainer import RunConfig, run
 
