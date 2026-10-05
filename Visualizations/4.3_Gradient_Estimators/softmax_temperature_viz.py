@@ -1,9 +1,4 @@
-"""
-softmax_temperature_viz.py
-
-Shows how softmax(z / τ) approaches argmax as τ → 0.
-Logits z = [3.0, 1.5, 0.5, -0.5] over four classes.
-"""
+"""Softmax probabilities for fixed logits as temperature decreases."""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -38,13 +33,11 @@ for i, (ax, tau) in enumerate(zip(axes, temps)):
     probs = softmax(logits, tau)
     ax.set_facecolor(BG)
 
-    # bars
     colors = [C_ARG if j == argmax_idx else C_BAR for j in range(n_classes)]
     alphas = [0.85 if j == argmax_idx else 0.65 for j in range(n_classes)]
     for j in range(n_classes):
         ax.bar(x[j], probs[j], color=colors[j], alpha=alphas[j], width=0.6, zorder=2)
 
-    # horizontal guides
     for y in [0.25, 0.5, 0.75, 1.0]:
         ax.axhline(y, color=GRAY, linewidth=0.6, linestyle="--", zorder=1)
 
@@ -62,7 +55,6 @@ for i, (ax, tau) in enumerate(zip(axes, temps)):
 
     ax.set_title(rf"$\tau = {tau}$", fontsize=11.5, pad=7)
 
-    # annotate argmax probability
     p_max = probs[argmax_idx]
     label = rf"$p_1={p_max:.3f}$" if p_max < 0.999 else r"$p_1\approx 1$"
     ax.text(

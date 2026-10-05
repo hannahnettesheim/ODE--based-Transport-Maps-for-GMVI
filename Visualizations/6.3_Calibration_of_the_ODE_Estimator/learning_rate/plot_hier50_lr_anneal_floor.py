@@ -24,11 +24,11 @@ try:
 
     S.setup()
     FIG = S.figsize(1.0, 0.42)
-    saver = lambda fig, name: S.save(fig, name, HERE)
+    save_figure = lambda fig, name: S.save(fig, name, HERE)
 except Exception:
     FIG = (11, 4.4)
 
-    def saver(fig, name):
+    def save_figure(fig, name):
         for ext in ("pdf", "png"):
             fig.savefig(
                 os.path.join(HERE, f"{name}.{ext}"), bbox_inches="tight", dpi=150
@@ -61,7 +61,7 @@ for ax, (schedule, title) in zip(
     ax.set_title(title)
 axes[0].set_ylabel(S.objective_label("hierarchical_mixture") + " (one seed)")
 axes[0].legend(title=r"$\eta_0$", fontsize=7, frameon=False)
-saver(fig, f"{BASE}_curves")
+save_figure(fig, f"{BASE}_curves")
 
 # High-resolution checkpoint ELBO shows whether rankings change during training.
 fig, axes = plt.subplots(1, 2, figsize=FIG, sharey=True)
@@ -82,7 +82,7 @@ for ax, (schedule, title) in zip(
     ax.set_title(title)
 axes[0].set_ylabel("high-resolution " + S.objective_label("hierarchical_mixture"))
 axes[0].legend(title=r"$\eta_0$", fontsize=7, frameon=False)
-saver(fig, f"{BASE}_checkpoints")
+save_figure(fig, f"{BASE}_checkpoints")
 
 print(f"\n=== D_KL(q||p) at step {NSTEPS} (one seed) ===")
 final = ck[ck.step == NSTEPS].copy()

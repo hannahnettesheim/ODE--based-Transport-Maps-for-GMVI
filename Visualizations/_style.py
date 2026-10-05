@@ -38,11 +38,7 @@ _T, _G, _S, _R = (
     SCHEME["ode_transport"],
 )
 
-# Shades of the OTR teal, so the variants read as one family but stay separable.
-# Ordered dark -> light. #2A9D8F is the scheme colour and belongs to plain OTR;
-# the clip that works (tau = n) gets the darkest shade so it reads as the result.
-# Not darker than about #147, or it stops reading as teal and starts reading as
-# the dark slate #264653 that DM already owns.
+# Teal shades distinguish OTR variants from the slate DM palette.
 TEAL = {
     "dark": "#14746A",
     "mid": "#2A9D8F",  # the scheme colour
@@ -59,9 +55,7 @@ COLORS = {
     "ST": _G,
     "SF": _S,
     "SF_clip": _S,
-    # Plain OTR keeps the scheme colour. Among the interventions, shade tracks
-    # how well the arm did (dark = recovered, pale = did not), which is the
-    # same ordering as their final KL: 3.3, 6.4, 24, 40, 91.
+    # Darker intervention shades correspond to lower final KL in the clipping study.
     "OTR": TEAL["mid"],
     "OTR_clip_n": TEAL["dark"],
     "OTR_clip_2n": TEAL["light"],
@@ -152,11 +146,7 @@ ORDER = [
 
 
 def canon(label: str):
-    # Idempotent: callers routinely pass a key that is already canonical
-    # (df["k"] holds canon output, and style()/short() are then called on it).
-    # Without this, "OTR_clip_n" re-enters the regex below, fails the \b after
-    # "clip_n", and silently degrades to "OTR_clip" -- i.e. the fixed clip gets
-    # drawn and labelled as the adaptive one.
+    # Preserve canonical keys: re-parsing OTR_clip_n would mislabel it as OTR_clip.
     if label in COLORS:
         return label
     s = label.lower()
@@ -210,7 +200,7 @@ def sort_key(label):
 
 
 def shared_legend(fig, ax, ncol=4, y=-0.02):
-    """One legend under both panels. At 418pt a per-axes legend eats the plot."""
+    """Place a shared legend below the panels."""
     h, l = ax.get_legend_handles_labels()
     fig.legend(
         h,
@@ -226,8 +216,7 @@ def shared_legend(fig, ax, ncol=4, y=-0.02):
 
 
 def _probe(fmt):
-    """Try one real render under usetex. Cached beside this file, because the
-    probe costs about a second and every figure script calls setup()."""
+    """Cache a trial usetex render for the requested output format."""
     cache = os.path.join(os.path.dirname(os.path.abspath(__file__)), f".texprobe_{fmt}")
     if os.path.exists(cache):
         return open(cache).read().strip() == "1"
@@ -255,10 +244,7 @@ def _probe(fmt):
 
 
 def _tex_works():
-    """A `latex` on PATH is not enough. matplotlib's usetex preamble pulls in
-    type1cm/type1ec (the cm-super package), which minimal TeX installs omit,
-    and the PNG path additionally needs dvipng. The PDF is what goes in the
-    thesis, so PDF is what decides; PNG is a preview and may be skipped."""
+    """Check PDF rendering with usetex, including its required font packages."""
     from shutil import which
 
     if which("latex") is None:
@@ -267,13 +253,7 @@ def _tex_works():
 
 
 def setup(usetex=True):
-    """Reset plotting typography and layout to Matplotlib's native defaults.
-
-    ``usetex`` is retained for API compatibility with existing scripts but is
-    intentionally ignored.  Project helpers such as :func:`figsize`, colours,
-    target names, and :func:`save` remain available without imposing a global
-    thesis font/style preset.
-    """
+    """Reset Matplotlib defaults. The usetex argument is retained but ignored."""
     plt.rcdefaults()
     global PCT
     PCT = "%"
@@ -322,13 +302,8 @@ def target_name(target, dim=None, short=False, k=None):
 
 
 def objective_label(target=None):
-    """Objective label for plots of ``-elbo`` values.
-
-    The implemented benchmark targets are normalised, so ``-ELBO`` is exactly
-    ``KL(q || p)``.  Lotka--Volterra is only known up to its normalising
-    constant and must therefore retain the honest ``-ELBO`` label.  Passing
-    ``None`` is appropriate for a figure containing only normalised targets.
-    """
+    """Label -ELBO as KL for normalized targets; retain -ELBO for Lotka--Volterra.
+    Pass None only when all plotted targets are normalized."""
     key = "" if target is None else str(target).lower().replace("-", "_")
     if "lotka" in key or key in ("lv", "lotka_volterra"):
         return r"$-\mathrm{ELBO}$"
@@ -343,18 +318,8 @@ def _pdf_width_pt(path):
 
 
 def save(fig, name, figdir, frac=1.0, tol=1.0, passes=5):
-    """Write the figure at EXACTLY `frac` x \\textwidth, then include it with a
-    bare \\includegraphics{...} and no width argument.
-
-    `bbox_inches="tight"` trims whitespace, so the file that lands on disk is
-    not the figsize that was asked for -- it came out 371-422pt for a 418pt
-    request. Included at \\textwidth LaTeX then rescales it, and rescaling a
-    figure rescales its type, which is the whole thing this module exists to
-    prevent. So: write, read the MediaBox back, correct the canvas width, and
-    repeat until the PDF measures 418pt to within half a point.
-
-    PNG is a preview only. Under usetex it needs dvipng; if that is missing the
-    PNG is skipped with a warning rather than silently."""
+    """Export a PDF at frac times the thesis text width, correcting for tight cropping.
+    Also export a PNG preview when its rendering dependencies are available."""
     os.makedirs(figdir, exist_ok=True)
     target = TEXTWIDTH_PT * frac
     pdf = os.path.join(figdir, f"{name}.pdf")

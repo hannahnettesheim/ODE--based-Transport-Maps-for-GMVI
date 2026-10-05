@@ -37,10 +37,8 @@ class AffineComponent(nn.Module):
         self.dim = dim
         self.param_type = param_type
 
-        # Shift a_i
         self.a = nn.Parameter(torch.randn(dim) * init_scale)
 
-        # Matrix A_i parameterization
         if param_type == "diagonal":
             # A_i = diag(exp(s_i)), log scale parameters
             self.log_diag = nn.Parameter(torch.full((dim,), math.log(init_scale)))
@@ -63,16 +61,10 @@ class AffineComponent(nn.Module):
                 self.sym_raw[is_diag] = math.log(init_scale)
 
         elif param_type == "cholesky":
-            # A = L L^T with L lower triangular and L_jj = exp(d_j) > 0.
-            # Stored as the n(n+1)/2 lower-triangular (incl. diagonal) entries.
-            # A is symmetric positive definite, which matters beyond convenience:
-            # T_i(x) = a_i + A_i x is the gradient of a convex function only when
-            # A_i is symmetric, and that is what makes the linear interpolation
-            # the W_2 geodesic (Brenier). A bare Cholesky factor used as the map
-            # would not have this property.
-            # Initialized so L = sqrt(init_scale) * I, i.e. A = init_scale * I --
-            # the SAME starting distribution as the other charts, so that a
-            # parametrization ablation measures the chart and nothing else.
+            # A = L L^T with positive diagonal L_jj = exp(d_j).
+            # A must be symmetric positive definite for T_i to be a convex gradient
+            # and its linear interpolation to be the W_2 geodesic. A bare L is insufficient.
+            # Initialize L = sqrt(init_scale) I to match the other charts.
             self.chol_raw = nn.Parameter(torch.zeros(dim * (dim + 1) // 2))
             with torch.no_grad():
                 tril_idx = torch.tril_indices(dim, dim, offset=0)

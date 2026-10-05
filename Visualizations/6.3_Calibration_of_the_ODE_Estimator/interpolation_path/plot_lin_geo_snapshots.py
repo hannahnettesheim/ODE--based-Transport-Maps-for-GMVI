@@ -35,7 +35,7 @@ Q_COLOR = "#457B9D"
 MEAN_COLOR = "#D1495B"
 
 
-def rebuild(rows):
+def restore_mixture(rows):
     """Reconstruct one matrix-exponential mixture from long-form parameters."""
     k = int(rows[rows.param == "log_weights"].idx.max() + 1)
     model = GeneralizedMixture(
@@ -79,7 +79,7 @@ def main():
                 & (params.path == path)
                 & (params.seed == SEED)
             ]
-            models[regime, path] = rebuild(subset)
+            models[regime, path] = restore_mixture(subset)
             samples[regime, path] = sample_q(
                 models[regime, path], 4000, seed=1000 + col
             )
@@ -175,7 +175,7 @@ def main():
                 markersize=5,
                 label="component means",
             ),
-            PatchProxy("0.65", "target density"),
+            legend_patch("0.65", "target density"),
         ],
         loc="lower center",
         ncol=3,
@@ -194,8 +194,7 @@ def main():
     print("  wrote lin_geo_snapshots_2x4.pdf / .png")
 
 
-def PatchProxy(color, label):
-    """Small legend proxy without importing the full patches namespace."""
+def legend_patch(color, label):
     from matplotlib.patches import Patch
 
     return Patch(facecolor=color, edgecolor="none", alpha=0.5, label=label)

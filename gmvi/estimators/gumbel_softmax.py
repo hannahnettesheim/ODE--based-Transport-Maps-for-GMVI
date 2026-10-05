@@ -63,7 +63,7 @@ class GumbelSoftmaxEstimator(GradientEstimator):
         self.mode = mode
         self._step = 0
 
-    def _current_temp(self) -> float:
+    def _annealed_temperature(self) -> float:
         return max(
             self.min_temperature, self.temperature * (self.anneal_rate**self._step)
         )
@@ -73,12 +73,11 @@ class GumbelSoftmaxEstimator(GradientEstimator):
         model: GeneralizedMixture,
         log_target: Callable[[Tensor], Tensor],
     ) -> Tuple[Tensor, Dict]:
-        tau = self._current_temp()
+        tau = self._annealed_temperature()
         self._step += 1
 
         N, K = self.MC_samples, model.K
 
-        # Shared Gumbel noise
         U = torch.rand(N, K, device=model.log_weights.device).clamp(1e-6, 1 - 1e-6)
         gumbel = -torch.log(-torch.log(U))
 
@@ -102,9 +101,8 @@ class GumbelSoftmaxEstimator(GradientEstimator):
             # ELBO evaluated at z_hard (value-wise); gradients flow through z_soft
             elbo = self._elbo_samples(model, log_target, z)
         else:
-            # mode='soft': textbook Gumbel-Softmax estimator (def:gumbel_softmax_estimator).
-            # ELBO at z_soft using the TRUE mixture density -- biased, and can spike
-            # when z_soft lands between components; that's the point of this arm.
+            # Relaxed samples need not follow q; evaluating the mixture density
+            # between components can produce large, biased gradients.
             log_p = log_target(z_soft)
             log_q = self._log_q(model, z_soft)
             elbo = log_p - log_q

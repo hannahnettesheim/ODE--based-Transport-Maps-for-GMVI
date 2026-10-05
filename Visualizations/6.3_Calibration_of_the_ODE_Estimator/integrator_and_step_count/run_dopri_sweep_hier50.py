@@ -1,4 +1,4 @@
-"""dopri5 tolerance sweep, K=50 mixture on the hierarchical target. OTR linear,"""
+"""DOPRI5 tolerance sweep for the K=50 hierarchical mixture."""
 import sys as _sys
 import pathlib as _pl
 
@@ -22,7 +22,7 @@ TOLS = [10.0 ** (-k) for k in range(1, 10)]
 JOBS = [(tensor, s) for tensor in TOLS for s in SEEDS]
 
 
-def cfg_for(tol, seed):
+def training_config(tol, seed):
     return RunConfig(
         target="hierarchical_mixture",
         target_kwargs={},
@@ -47,8 +47,8 @@ def cfg_for(tol, seed):
     )
 
 
-def one_job(tol, seed):
-    result = run(cfg_for(tol, seed))
+def run_training_job(tol, seed):
+    result = run(training_config(tol, seed))
     steps, checkpoints = (result.steps, result.checkpoints)
     cols = [c for c in ("step", "nfe", "grad_norm") if c in steps.columns]
     step_diagnostics = steps[steps.step.isin(CKPTS)][cols].drop_duplicates("step")
@@ -86,7 +86,7 @@ def one_job(tol, seed):
 def main():
     from gmvi.experiments.execution import run_training_jobs
 
-    run_training_jobs(JOBS, one_job, HERE, BASE, config_for=cfg_for)
+    run_training_jobs(JOBS, run_training_job, HERE, BASE, config_for=training_config)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,6 @@ from gmvi.estimators.baseEstimator import GradientEstimator, SampleMode
 from gmvi.choices import ODEPath, ODESolver
 
 
-# this is the simpler case: we are looking for diagonal ODES
 def _velocity_diagonal(
     x: Tensor,  # (N, D)
     t: float,
@@ -446,7 +445,6 @@ class ODETransportEstimator(GradientEstimator):
     ) -> Tuple[Tensor, Dict]:
         N = self.MC_samples
 
-        # Sample from reference and integrate ODE
         with torch.no_grad():
             x0 = self._ref_sample(N, model)
 
@@ -461,7 +459,6 @@ class ODETransportEstimator(GradientEstimator):
             return_nfe=True,
         )
 
-        # ELBO: both terms evaluated at x1
         log_p = log_target(x1)  # (N,)
         log_q = self._log_q(model, x1)  # (N,), exact GMM density
 

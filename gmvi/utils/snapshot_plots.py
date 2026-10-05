@@ -14,9 +14,7 @@ import sys
 import numpy as np
 import torch
 
-# _style.py lives in Visualisations/, outside the package, because it is a
-# thesis-layout concern rather than a library one. Import it if it is already
-# importable, otherwise reach for it relative to the repository root.
+# Load the shared thesis plotting style from the repository when needed.
 try:
     import _style as S
 except ImportError:  # pragma: no cover
@@ -37,7 +35,7 @@ from gmvi.models.reference_distributions import make_reference
 
 @dataclass
 class Panel:
-    """One fitted mixture, plus enough context to label it honestly."""
+    """Fitted mixture parameters, configuration, and display metrics."""
 
     label: str
     state: Dict[str, torch.Tensor]
@@ -70,14 +68,14 @@ def build_model(config: Dict[str, Any], dim: int) -> GeneralizedMixture:
     )
 
 
-def _model_of(panel: Panel, dim: int) -> GeneralizedMixture:
+def _restore_panel_model(panel: Panel, dim: int) -> GeneralizedMixture:
     m = build_model(panel.config, dim)
     m.load_state_dict(panel.state)
     m.eval()
     return m
 
 
-def _dim_of(panel: Panel) -> int:
+def _panel_dimension(panel: Panel) -> int:
     return int(panel.state["components.0.a"].shape[0])
 
 
@@ -176,7 +174,7 @@ def panels_from_sweep(
     out = []
     for c in chosen:
         cfg = c["meta"]["config"]
-        lab = _label(cfg, varying)
+        lab = _config_label(cfg, varying)
         met = {"seed": seed, "step": c["step"], metric: c["score"]}
         out.append(Panel(label=lab, state=c["state"], config=cfg, metrics=met))
     return out
@@ -253,7 +251,7 @@ def panels_from_param_csv(
         lab = (
             label_fmt.format(**dict(zip(keys, key_t)))
             if label_fmt
-            else ", ".join(f"{k}={_fmt(v)}" for k, v in zip(keys, key_t))
+            else ", ".join(f"{k}={_format_config_value(v)}" for k, v in zip(keys, key_t))
         )
         met = {"seed": seed}
         if scores and key_t in scores:
@@ -262,7 +260,7 @@ def panels_from_param_csv(
     return out
 
 
-def _fmt(v):
+def _format_config_value(v):
     if isinstance(v, float):
         return f"{v:g}"
     return str(v)
@@ -301,7 +299,7 @@ _PRETTY_EST = {
 }
 
 
-def _label(cfg: Dict[str, Any], keys: Sequence[str]) -> str:
+def _config_label(cfg: Dict[str, Any], keys: Sequence[str]) -> str:
     bits = []
     for k in keys:
         v = cfg.get(k)
@@ -415,8 +413,8 @@ def plot_snapshots(
         raise ValueError("no panels to draw")
     S.setup()
 
-    D = _dim_of(panels[0])
-    models = [_model_of(p, D) for p in panels]
+    D = _panel_dimension(panels[0])
+    models = [_restore_panel_model(p, D) for p in panels]
     params = [_marginal_params(m, dims) for m in models]
 
     if lim is None:
@@ -440,19 +438,11 @@ def plot_snapshots(
     ncols = ncols or n
     nrows = math.ceil(n / ncols)
 
-    # Height is COMPUTED, not guessed from an aspect ratio. The axes are square
-    # (set_aspect("equal")), so their height follows from the column width; on
-    # top of that each row needs room for its title, which is two lines
-    # whenever a panel reports a seed and a score. An aspect heuristic cannot
-    # know that, which is how the suptitle ended up sitting on the panel titles.
+    # Square density panels need additional height for titles and metrics.
     n_title_lines = 2 if any(p.subtitle() for p in panels) else 1
     W = S.TEXTWIDTH_IN * frac
     ax_w = W / ncols  # ignores margins; corrected by save()
-    # Title type has to fit the COLUMN, not the figure. At five columns a panel
-    # is about 83pt wide and "seed 1, KL=1.455" set at 8pt overruns it into the
-    # next panel, so the size steps down and the gutter opens up as columns are
-    # added. Below ~6pt it stops being legible in print; at that point the
-    # answer is fewer columns or a shorter label, not smaller type.
+    # Reduce title size and widen gutters as the column count increases.
     tfs = 8.0 if ncols <= 4 else (7.0 if ncols <= 6 else 6.2)
     wspace = 0.10 if ncols <= 4 else (0.18 if ncols <= 6 else 0.24)
     title_in = 0.105 * n_title_lines + 0.05
@@ -483,7 +473,7 @@ def plot_snapshots(
                 alpha=0.8,
             )
         ax.set_title("True target", fontsize=tfs, pad=3)
-        _finish(ax, lim, first=True)
+        _format_density_axes(ax, lim, first=True)
 
     for p, (w, mu, cov) in zip(panels, params):
         ax = next(axes)
@@ -494,7 +484,6 @@ def plot_snapshots(
             cs = _draw_density(ax, Z, X, Y, floor, levels, cmap)
         else:
             if draw_target and show_target_outline:
-                # the target as a faint outline, so coverage is readable
                 ax.contour(
                     X,
                     Y,
@@ -510,14 +499,12 @@ def plot_snapshots(
             )
         sub = p.subtitle()
         ax.set_title(p.label + (f"\n{sub}" if sub else ""), fontsize=tfs, pad=3)
-        _finish(ax, lim, first=first_in_row)
+        _format_density_axes(ax, lim, first=first_in_row)
 
     for ax in axes:  # unused cells in a ragged grid
         ax.axis("off")
 
-    # Reserve the header in FIGURE coordinates from the inches budgeted above,
-    # then put the suptitle inside that reserved strip. hspace is in units of
-    # the axis height, so it too is derived from title_in rather than guessed.
+    # Reserve title space in figure coordinates; hspace is relative to axis height.
     sup = title or _shared_title(panels)
     top = 1.0 - head_in / H
     fig.subplots_adjust(
@@ -557,7 +544,7 @@ def plot_snapshots(
     return fig
 
 
-def _finish(ax, lim, first):
+def _format_density_axes(ax, lim, first):
     ax.set_xlim(*lim)
     ax.set_ylim(*lim)
     ax.set_aspect("equal")
@@ -570,8 +557,7 @@ def _finish(ax, lim, first):
 
 
 def _shared_title(panels: Sequence[Panel]) -> str:
-    """The configuration the panels have in common -- the whole point of
-    putting it on the figure is that a reader never has to trust a filename."""
+    """Format configuration fields shared by all panels."""
     c = panels[0].config
     same = lambda k: all(p.config.get(k) == c.get(k) for p in panels)
     bits = []

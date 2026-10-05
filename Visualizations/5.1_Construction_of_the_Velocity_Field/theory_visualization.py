@@ -115,7 +115,6 @@ for t in T_VALS:
     densities[t] = np.exp(log_d)
 
 
-# Five individual images — one per t
 
 BG = "#ffffff"
 

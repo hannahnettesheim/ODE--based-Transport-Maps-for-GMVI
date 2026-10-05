@@ -26,7 +26,7 @@ TOL = 1e-05
 JOBS = [(lr, schedule_name, SEED) for lr in LRS for schedule_name in SCHEDS]
 
 
-def cfg_for(lr, schedule_name, seed):
+def training_config(lr, schedule_name, seed):
     return RunConfig(
         target="hierarchical_mixture",
         target_kwargs={},
@@ -52,8 +52,8 @@ def cfg_for(lr, schedule_name, seed):
     )
 
 
-def one_job(lr, schedule_name, seed):
-    result = run(cfg_for(lr, schedule_name, seed))
+def run_training_job(lr, schedule_name, seed):
+    result = run(training_config(lr, schedule_name, seed))
     steps, checkpoints = (result.steps, result.checkpoints)
     cols = [c for c in ("step", "nfe", "grad_norm") if c in steps.columns]
     checkpoints = checkpoints.merge(
@@ -99,7 +99,7 @@ def one_job(lr, schedule_name, seed):
 def main():
     from gmvi.experiments.execution import run_training_jobs
 
-    run_training_jobs(JOBS, one_job, HERE, BASE, config_for=cfg_for)
+    run_training_jobs(JOBS, run_training_job, HERE, BASE, config_for=training_config)
 
 
 if __name__ == "__main__":

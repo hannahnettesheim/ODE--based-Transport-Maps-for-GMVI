@@ -27,13 +27,8 @@ class Target:
     def dim(self) -> int:
         raise NotImplementedError
 
-    # C_p in the cost model: how expensive is a single target evaluation, relative
-    # to a velocity-field evaluation? For cheap closed-form targets (banana) this
-    # is negligible; for an ODE-solve-backed target (Lotka-Volterra) it dominates,
-    # which is the regime where paying more for transport-ODE accuracy is nearly
-    # free. Default implementation uses self.sample(); override (as
-    # LotkaVolterraPosterior does, via self.prior.sample()) for targets with no
-    # exact sampler.
+    # Target-evaluation cost C_p. Targets without an exact sampler must
+    # override this benchmark with an appropriate source of evaluation points.
 
     def time_per_eval(self, batch: int = 256, repeats: int = 20) -> float:
         """Seconds per single log_prob evaluation, i.e. C_p in the cost model."""
@@ -99,10 +94,8 @@ class TwoMoonsTarget(Target):
 
     def sample(self, n: int) -> Tensor:
         half = n // 2
-        # Upper moon
         theta1 = torch.rand(half) * math.pi
         x1 = torch.stack([torch.cos(theta1) - 1.0, torch.sin(theta1) + 0.5], dim=-1)
-        # Lower moon
         theta2 = torch.rand(n - half) * math.pi
         x2 = torch.stack([-torch.cos(theta2) + 1.0, -torch.sin(theta2) - 0.5], dim=-1)
         samples = torch.cat([x1, x2], dim=0)
@@ -226,12 +219,8 @@ class NealFunnelTarget(Target):
     name = "neal_funnel"
 
     def __init__(self, dim: int = 10, sigma_v: float = 3.0):
-        # sigma_v = 3.0 is the standard Neal funnel. It is also brutal: the
-        # conditional scale exp(v/2) then spans [0.011, 90] over +/-3 sd of v,
-        # an aspect ratio of ~10^4, on which a 5-component affine mixture cannot
-        # cover the neck and every estimator fails alike. Reduce it (1.0-1.5) to
-        # keep the same structural difficulty -- scale heterogeneity -- at a
-        # level where estimators are actually distinguishable.
+        # The standard sigma_v=3 gives conditional scales spanning roughly
+        # [0.011, 90] within three standard deviations of v.
         self._dim = dim
         self.sigma_v = sigma_v
 
@@ -278,9 +267,7 @@ class LogisticRegressionPosterior(Target):
 
     def log_prob(self, w: Tensor) -> Tensor:
         # w: (S, D)
-        # Prior
         lp_prior = dist.Normal(0.0, self.prior_scale).log_prob(w).sum(-1)  # (S,)
-        # Likelihood
         logits = w @ self.X.T  # (S, N)
         lp_lik = dist.Bernoulli(logits=logits).log_prob(self.y).sum(-1)  # (S,)
         return lp_prior + lp_lik

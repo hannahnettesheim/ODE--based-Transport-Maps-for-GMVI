@@ -24,9 +24,8 @@ except ImportError:  # module run directly rather than imported as gmvi.targets.
     from gmvi.targets.distributions import Target
 
 
-# Prior means and scales on the log scale, ordered as in `x` above.
-# Weakly informative; broadly in line with the Stan predator-prey case study, but not
-# copied from it -- check that source if you want to match it exactly.
+# Independent Normal priors on log parameters; these differ from Stan
+# priors on constrained rates.
 _PRIOR_LOC = torch.tensor(
     [
         0.0,  # log alpha   ~ N(log 1,    0.5)
@@ -41,54 +40,29 @@ _PRIOR_LOC = torch.tensor(
 )
 _PRIOR_SCALE = torch.tensor([0.5, 0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0])
 
-# Guards that are part of the definition of the NUMERICAL forward model G-hat. They bound
-# the solver, and the thesis should state that the posterior is defined through G-hat
-# rather than the exact G. The test asserts they never bind where the posterior has mass.
+# These clamps define the numerical forward model, rather than the exact ODE.
 _LOG_STATE_CLAMP = 12.0  # exp(12) ~ 1.6e5 individuals; far above the posterior regime
-# Rates in [1.4e-11, 7.2e10]. This only has to stop `rate * exp(state)` overflowing float32
-# *before* _FIELD_CLAMP can act: e^25 * e^12 = 1e16, far below 3.4e38. It is deliberately
-# far wider than anything plausible -- true log beta and log delta sit near -3.6, so a bound
-# of 8 was only ~1.5x beyond the region the variational family explores, and a binding guard
-# there would zero the gradient exactly where the optimizer still needs signal.
+# Clamp log rates to prevent overflow before the vector-field clamp acts.
+# The bound is wider than the posterior region to avoid zeroing its gradients.
 _LOG_RATE_CLAMP = 25.0
 
-# Representational bound, NOT a modelling choice. float32 exp() overflows above ~88 and
-# underflows to exactly zero below ~-87, and Normal(mu, 0) is undefined. Clamping log sigma
-# to +/-30 keeps exp() within [9e-14, 1e13], so the likelihood is evaluated exactly as
-# specified everywhere the arithmetic can represent it at all. This one lives in log_prob()
-# and therefore must not encode any assumption about the model.
+# Keep likelihood scales finite and positive in float32. The clamp
+# changes the numerical likelihood outside this log-scale range.
 _LOG_SIGMA_CLAMP = 30.0
 
-# Bound on |ds/dt| in log-state. This is the clamp that actually matters for stability:
-# within a single RK4 step k4 depends on k3 depends on k2, so the backward pass contains
-# products like (h/2 * df/ds)^3. Unbounded, those overflow float32 for extreme parameter
-# draws -- giving inf, and then 0 * inf = nan -- even though the forward value stays
-# finite because the state is clamped afterwards. Bounding the field caps those products
-# and cuts the gradient chain cleanly (the clamp has zero derivative once saturated).
-# A log-population changing by 1e3 per unit time is far outside any region with mass.
+# Bound the log-state field to prevent overflow in RK4 backward products.
+# Saturated clamps have zero derivative; the bound is outside the posterior region.
 _FIELD_CLAMP = 1.0e3
 
 
-# The Stan predator-prey model places its priors on the CONSTRAINED parameters
-# and lets Stan add the log-Jacobian for the <lower=0> declaration:
-#
-#     alpha, gamma ~ Normal(1,    0.5 ) truncated to (0, inf)
-#     beta,  delta ~ Normal(0.05, 0.05) truncated to (0, inf)
-#     z_init       ~ lognormal(log 10, 1)      <- already matches _PRIOR_LOC
-#     sigma        ~ lognormal(-1, 1)          <- already matches _PRIOR_LOC
-#
-# The first two are NOT the same as this module's default, which puts a Normal
-# prior on log(rate), i.e. a lognormal on the rate. The locations agree but the
-# shapes do not: a lognormal is right-skewed, a truncated normal is not. Half
-# of the specification therefore already matches and half does not.
+# The Stan option uses positive-truncated Normal priors on rates,
+# with a log-Jacobian for the log coordinates. Initial-state and noise
+# priors match the default lognormal priors.
 _STAN_RATE_LOC = torch.tensor([1.0, 0.05, 1.0, 0.05])  # alpha, beta, gamma, delta
 _STAN_RATE_SCALE = torch.tensor([0.5, 0.05, 0.5, 0.05])
 
-# Representational bound, NOT a modelling choice, in the spirit of
-# _LOG_SIGMA_CLAMP. Under the Stan prior log p(x) contains -(e^x - m)^2/(2 s^2),
-# which overflows float32 once e^x exceeds ~1e19. Clamping the exponent at 30
-# gives e^30 ~ 1.1e13 and a quadratic term ~2e26, comfortably finite, in a
-# region carrying no posterior mass whatever (the rates are O(1) and O(0.05)).
+# Bound exponentiation in the Stan prior to keep its quadratic term
+# finite in float32, outside the posterior rate range.
 _STAN_RATE_EXP_CLAMP = 30.0
 
 

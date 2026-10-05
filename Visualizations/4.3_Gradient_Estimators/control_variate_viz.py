@@ -57,11 +57,9 @@ C_CV = "#2166AC"  # dark blue — low variance
 fig, ax = plt.subplots(figsize=(7, 4), facecolor=BG)
 ax.set_facecolor(BG)
 
-# Filled areas (subtle)
 ax.fill_between(xs, kde_no(xs), color=C_NO, alpha=0.13, zorder=2)
 ax.fill_between(xs, kde_cv(xs), color=C_CV, alpha=0.22, zorder=2)
 
-# KDE curves
 ax.plot(
     xs,
     kde_no(xs),
@@ -88,7 +86,6 @@ ax.plot(
     ),
 )
 
-# True gradient: dashed vertical line + label above
 ymax_cv = float(kde_cv(np.array([true_grad]))[0])
 ax.axvline(
     true_grad,
@@ -99,7 +96,6 @@ ax.axvline(
     label=rf"True gradient $= 2\mu = {true_grad:.0f}$",
 )
 
-# Axes labels
 ax.set_xlim(xs[0], xs[-1])
 ax.set_ylim(bottom=0)
 ax.set_xlabel(r"Gradient estimate  ($N = 10$ samples per estimate)", fontsize=11)

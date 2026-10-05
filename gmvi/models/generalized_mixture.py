@@ -53,16 +53,13 @@ class GeneralizedMixture(nn.Module):
         self.D = dim
         self.param_type = param_type
 
-        # Reference distribution
         self.reference = reference if reference is not None else StandardNormal(dim)
         assert (
             self.reference.dim == dim
         ), f"Reference dim {self.reference.dim} != latent dim {dim}"
 
-        # Mixture weights (unnormalized log-weights)
         self.log_weights = nn.Parameter(torch.zeros(n_components))
 
-        # One learnable affine component per mixture element
         self.components = nn.ModuleList(
             [
                 AffineComponent(
@@ -103,9 +100,7 @@ class GeneralizedMixture(nn.Module):
         return torch.logsumexp(log_w + log_comp, dim=1)  # (N,)
 
     def sample(self, n: int) -> Tuple[Tensor, Tensor]:
-        """
-        Samples from the mixture
-        """
+        """Return samples and their component indices."""
         with torch.no_grad():
             k = dist.Categorical(probs=self.weights).sample((n,))  # (N,)
             x = self.reference.sample(n)  # (N, D)
@@ -150,7 +145,6 @@ class GeneralizedMixture(nn.Module):
         return torch.stack([c.log_abs_det() for c in self.components])
 
     def get_matrices(self) -> List[Tensor]:
-        """Return list of A_i matrices. Each (D, D)."""
         return [c.get_A() for c in self.components]
 
     def extra_repr(self) -> str:

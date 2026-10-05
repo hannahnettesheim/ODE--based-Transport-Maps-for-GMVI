@@ -19,9 +19,7 @@ from matplotlib.patches import Patch
 
 import _style as S
 
-# Preserve this plot's original Matplotlib typography.  The shared helper is
-# used for target names only; its compact serif thesis style is intentionally
-# not applied to this four-panel diagnostic.
+# Use the shared target names with this plot's local typography.
 plt.rcdefaults()
 plt.rcParams.update(
     {
@@ -37,7 +35,7 @@ plt.rcParams.update(
 FIG = (10, 6)
 
 
-def saver(fig, name):
+def save_figure(fig, name):
     for ext in ("pdf", "png"):
         fig.savefig(os.path.join(HERE, f"{name}.{ext}"), bbox_inches="tight", dpi=150)
     plt.close(fig)
@@ -84,7 +82,7 @@ fig.legend(
     bbox_to_anchor=(0.5, -0.01),
 )
 fig.tight_layout(rect=(0, 0.07, 1, 1))
-saver(fig, "lin_geo_curves")
+save_figure(fig, "lin_geo_curves")
 
 # Paired relative difference. Pairing by seed and step removes much of the
 # between-seed variation that obscures the comparison in two overlaid curves.
@@ -99,9 +97,6 @@ for ax, rk in zip(axes.flat, REG):
     loss_lin = -wide["linear"]
     loss_geo = -wide["geometric"]
     wide["relative_diff"] = loss_geo - loss_lin
-    # wide["relative_diff"] = (
-    #        200.0 * (loss_geo - loss_lin)
-    #        / (loss_geo.abs() + loss_lin.abs()).clip(lower=np.finfo(float).eps))
 
     # Smooth within each paired seed before summarising across seeds.
     diff = (
@@ -135,9 +130,8 @@ fig.legend(
     bbox_to_anchor=(0.5, -0.01),
 )
 fig.tight_layout(rect=(0, 0.07, 1, 0.96))
-saver(fig, "lin_geo_relative_difference")
+save_figure(fig, "lin_geo_relative_difference")
 
-# final KL, NFE, and forward-pass time, linear vs geometric
 fin = ck[ck.step == 1000]
 forward = st.groupby(["regime", "path", "seed"], as_index=False).wall_s.mean()
 fig, (a0, a1, a2) = plt.subplots(1, 3, figsize=(FIG[0], FIG[1] * 0.45))
@@ -189,7 +183,7 @@ fig.legend(
     bbox_to_anchor=(0.5, 1.02),
 )
 fig.tight_layout(rect=(0, 0, 1, 0.92))
-saver(fig, "lin_geo_final")
+save_figure(fig, "lin_geo_final")
 
 print("\n=== D_KL(q||p) at step 1000 (mean / std) ===")
 print(

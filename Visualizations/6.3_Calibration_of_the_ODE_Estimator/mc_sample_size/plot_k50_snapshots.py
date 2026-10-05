@@ -1,9 +1,4 @@
-"""Final fitted q(z) for the K=50 hier-mixture runs, via
-gmvi.utils.visualization.plot_2d_approximation. Rebuilds each model from the
-saved *_final_params.csv (flattened state_dict) and renders a grid.
-
-  python plot_k50_snapshots.py                # M sweep + dopri tol sweep
-"""
+"""Plot saved K=50 hierarchical-mixture fits."""
 import sys as _sys, pathlib as _pl
 
 _ROOT = next(
@@ -36,8 +31,7 @@ with torch.no_grad():
 _PT = np.exp(_LP - _LP.max())
 
 
-def _panel(ax, model=None):
-    """target mode field (grey); q samples (blue) + weighted centres (red x)."""
+def draw_mixture_panel(ax, model=None):
     ax.contourf(_XX, _YY, _PT, levels=20, cmap="Greys", alpha=0.55, zorder=0)
     ax.set_aspect("equal")
     ax.set_xlim(LIM)
@@ -64,8 +58,8 @@ def _panel(ax, model=None):
     )
 
 
-def rebuild(rows):
-    """rows: DataFrame with columns param, idx, value for ONE run."""
+def restore_mixture(rows):
+    """Restore one model from param, idx, value rows."""
     m = GeneralizedMixture(
         n_components=K,
         dim=DIM,
@@ -82,12 +76,12 @@ def rebuild(rows):
     return m
 
 
-def grid_figure(fp, key_cols, cells, seed, title, outname):
-    """cells: list of (label, filter-dict). One column per cell + target col."""
+def plot_snapshot_grid(fp, key_cols, cells, seed, title, outname):
+    """Plot selected runs alongside the target density."""
     n = len(cells)
     fig, axes = plt.subplots(1, n + 1, figsize=(2.5 * (n + 1), 2.8), squeeze=False)
     axes = axes[0]
-    _panel(axes[0])
+    draw_mixture_panel(axes[0])
     axes[0].set_title("target p(z)")
     for j, (lab, filt) in enumerate(cells):
         ax = axes[j + 1]
@@ -100,15 +94,15 @@ def grid_figure(fp, key_cols, cells, seed, title, outname):
             )
         sub = sub[sub.seed == seed]
         if sub.empty:
-            _panel(ax)
+            draw_mixture_panel(ax)
             ax.set_title(f"{lab}\n(missing)")
             continue
-        m = rebuild(sub)
+        m = restore_mixture(sub)
         with torch.no_grad():
             neff = float(
                 np.exp(-(m.weights.numpy() * np.log(m.weights.numpy() + 1e-12)).sum())
             )
-        _panel(ax, m)
+        draw_mixture_panel(ax, m)
         ax.set_title(f"{lab}\n$n_{{eff}}$={neff:.0f}/50")
     fig.suptitle(title, y=1.06)
     fig.tight_layout()
@@ -123,7 +117,7 @@ if os.path.exists(p):
     fp = pd.read_csv(p)
     fp = fp[fp.regime == "hier_k50"]
     Ms = sorted(fp.M.unique())
-    grid_figure(
+    plot_snapshot_grid(
         fp,
         ["M"],
         [(f"M={m}", {"M": m}) for m in Ms],
@@ -141,7 +135,7 @@ if os.path.exists(p):
         for t in (1e-1, 1e-2, 1e-3, 1e-6, 1e-9)
         if np.isclose(fp.solver_param, t).any()
     ]
-    grid_figure(
+    plot_snapshot_grid(
         fp,
         ["solver_param"],
         [(f"rtol={t:g}", {"solver_param": t}) for t in tols],
@@ -158,7 +152,7 @@ if os.path.exists(p):
     for sc in ("none", "cosine"):
         s = fp[fp.sched == sc]
         ns = sorted(s.n_steps.unique())
-        grid_figure(
+        plot_snapshot_grid(
             s,
             ["n_steps"],
             [(f"{n} steps", {"n_steps": n}) for n in ns],
@@ -179,7 +173,7 @@ if os.path.exists(p):
     for schedule in ("strict", "anneal_floor_0.1"):
         s = fp[fp.schedule == schedule]
         lrs = sorted(s.lr.unique())
-        grid_figure(
+        plot_snapshot_grid(
             s,
             ["lr"],
             [(rf"$\eta_0={lr:g}$", {"lr": lr}) for lr in lrs],

@@ -1,4 +1,4 @@
-"""MC-sample sweep. 4 regimes x M in {2^8,2^10,2^12,2^14} x 5 seeds. OTR linear,"""
+"""Compare ODE transport across sample counts and four target regimes."""
 import sys as _sys
 import pathlib as _pl
 
@@ -31,7 +31,7 @@ REGIMES = {
 JOBS = [(regime, m, s) for regime in REGIMES for m in MS for s in SEEDS]
 
 
-def cfg_for(regime, m, seed):
+def training_config(regime, m, seed):
     regime_config = REGIMES[regime]
     return RunConfig(
         target=regime_config["target"],
@@ -57,8 +57,8 @@ def cfg_for(regime, m, seed):
     )
 
 
-def one_job(regime, m, seed):
-    result = run(cfg_for(regime, m, seed))
+def run_training_job(regime, m, seed):
+    result = run(training_config(regime, m, seed))
     steps, checkpoints = (result.steps, result.checkpoints)
     cols = [c for c in ("step", "nfe", "grad_norm") if c in steps.columns]
     checkpoints = checkpoints.merge(
@@ -84,7 +84,7 @@ def one_job(regime, m, seed):
 def main():
     from gmvi.experiments.execution import run_training_jobs
 
-    run_training_jobs(JOBS, one_job, HERE, BASE, config_for=cfg_for)
+    run_training_jobs(JOBS, run_training_job, HERE, BASE, config_for=training_config)
 
 
 if __name__ == "__main__":

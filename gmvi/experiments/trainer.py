@@ -30,8 +30,7 @@ from gmvi.experiments import diagnostics as dg
 
 @dataclass
 class RunConfig:
-    """Everything one training run needs. Hover any field for its meaning;
-    fields typed as a Literal will offer their allowed values as completions."""
+    """Training configuration, including estimator, optimizer, and diagnostics."""
 
     target: TargetName = "banana"
     """Which target posterior to fit."""
@@ -176,9 +175,7 @@ class RunConfig:
     continues and the frame is full of nan."""
 
     def __post_init__(self):
-        """Literal types are checked by the editor, not at runtime, so a value
-        built from a string variable or a CLI argument still needs checking --
-        and it should fail here rather than a thousand steps in."""
+        """Validate configuration values, including strings supplied at runtime."""
         for name in ("chart", "estimator", "target", "reference", "optimizer"):
             validate(name, getattr(self, name))
         validate("scheduler", self.scheduler, allow_none=True)
@@ -217,8 +214,7 @@ class RunConfig:
             )
 
     def id_fields(self) -> Dict[str, Any]:
-        """The columns every output row carries, so frames can be concatenated
-        across a sweep and still be identifiable."""
+        """Run identifiers included in each output row."""
         return dict(
             target=self.target,
             target_Z=self.target_Z,
@@ -335,8 +331,7 @@ def run(
     target=None,
     checkpoint_callback: Optional[Callable[[int, Dict, Dict], None]] = None,
 ) -> RunResult:
-    """Train once. Pass model/target to reuse them; otherwise they are built
-    from the config, which is what a sweep should do."""
+    """Train a mixture, optionally reusing the supplied model and target."""
     t_start = time.time()
     if target is None:
         target = build_target(cfg)
@@ -436,8 +431,7 @@ def run(
         if cfg.probe_grad_norm and want_row:
             g = dg.flat_grad(model)
             row["grad_norm"] = float(g.norm())
-            # per-block norms: the late variance migration into the weights was
-            # only ever seen at five snapshots. This resolves WHEN it happens.
+            # Track gradient blocks at every step to locate changes between snapshots.
             for b, m in masks.items():
                 row[f"grad_norm_{b}"] = float(g[torch.as_tensor(m)].norm())
         if cfg.geometry_every and (step % cfg.geometry_every == 0):
@@ -491,8 +485,7 @@ def run(
 
 
 def run_many(configs: List[RunConfig]) -> Dict[str, pd.DataFrame]:
-    """Run a list of configs and return concatenated frames plus the snapshots.
-    This is all a sweep script should need."""
+    """Run configurations sequentially and concatenate results and snapshots."""
     steps, ckpts, metas, snaps = [], [], [], {}
     for cfg in configs:
         r = run(cfg)

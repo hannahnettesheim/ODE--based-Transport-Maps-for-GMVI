@@ -56,10 +56,8 @@ class ExactMarginalizationEstimator(GradientEstimator):
         elbo_per_component = []
 
         for k in range(K):
-            # Sample from the base distribution
             x_k = self._ref_sample(N, model)  # (N, D)
 
-            # Push through component k
             z_k = model.components[k].forward(x_k)  # (N, D)
 
             # Evaluate the true mixture ELBO at z_k:
@@ -68,24 +66,17 @@ class ExactMarginalizationEstimator(GradientEstimator):
 
             elbo_per_component.append(elbo_k)
 
-        # (N, K) -- the per-draw structure is KEPT rather than meaned away here,
-        # so that the per-sample gradients are available. The component sum is
-        # linear and each component draws its own independent batch, so
-        #     grad[ sum_k w_k (1/N) sum_n e_kn ] = (1/N) sum_n grad[ sum_k w_k e_kn ]
-        # and term n depends only on draw n. The i.i.d. unit is the K-TUPLE
-        # (x_1[n], ..., x_K[n]), not a single sample; the variance estimated
-        # from these terms is still the variance of this estimator at MC = N.
+        # Keep one term per independent K-tuple of component draws so the
+        # variance diagnostic measures this estimator at MC = N.
         elbo_per_component = torch.stack(elbo_per_component, dim=1)  # (N, K)
 
-        # Exact sum over mixture components, per draw
         elbo = (weights.unsqueeze(0) * elbo_per_component).sum(dim=1)  # (N,)
 
         terms = -elbo
 
         return terms, {
             "elbo": elbo.mean().item(),
-            # (K,) as before: the per-component ELBO, now meaned over draws here
-            # rather than inside the loop.
+            # Component ELBOs averaged over draws.
             "component_elbos": elbo_per_component.mean(dim=0).detach().cpu(),
             "weights": weights.detach().cpu(),
         }

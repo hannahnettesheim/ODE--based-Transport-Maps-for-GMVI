@@ -20,12 +20,7 @@ def timestamp() -> str:
 
 
 def atomic_json_dump(obj, path: str, backup: bool = True) -> None:
-    """
-    Write JSON so that `path` is never left in a partially written state.
-
-    Keeps one rolling backup at `path + ".bak"`, so even a logically wrong
-    write (an empty cache, say) is recoverable.
-    """
+    """Atomically replace JSON, optionally keeping one rolling .bak copy."""
     directory = os.path.dirname(os.path.abspath(path)) or "."
     os.makedirs(directory, exist_ok=True)
 
@@ -68,7 +63,7 @@ def save_versioned(df, path: str, also_stable: bool = True) -> str:
 
 
 def describe_history(path: str) -> str:
-    """One-line summary of the versioned files sitting next to `path`."""
+    """Summarize timestamped versions of a CSV file."""
     stem, ext = os.path.splitext(path)
     base = os.path.basename(stem)
     directory = os.path.dirname(os.path.abspath(path)) or "."

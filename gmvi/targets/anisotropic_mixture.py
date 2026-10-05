@@ -91,13 +91,8 @@ class AnisotropicMixtureTarget(Target):
             Q = torch.eye(dim, dtype=dtype)
         self.Q = Q.to(device)
 
-        # Modes on a circle in the (rotated) 2-plane spanned by the two
-        # directions whose scale is closest to 1 -- NOT the first two. At the
-        # edge of the spectrum s ~ kappa^{-1/2}, so at kappa = 1e5 the modes
-        # would sit in a Euclidean ball of radius ~0.016. That is
-        # geometrically fine (Mahalanobis separation is still `sep` by
-        # construction) but numerically delicate in float32. In the middle
-        # s ~ 1, so the Euclidean radius stays O(sep) at every kappa.
+        # Place modes in the rotated plane with scales closest to one. This keeps
+        # Euclidean separation O(sep) and avoids float32 issues at large kappa.
         j = int(torch.argmin(torch.log(self.s).abs()))
         j = min(j, dim - 2)
         self.mode_axes = (j, j + 1)
@@ -114,9 +109,7 @@ class AnisotropicMixtureTarget(Target):
         self.true_weights = (w / w.sum()).to(device)
         self.true_log_weights = torch.log(self.true_weights)
 
-        # log det Sigma^{1/2} = sum_j log s_j = 0 by construction, but compute
-        # it rather than hard-coding 0 so the density stays correct if the
-        # spectrum is ever changed.
+        # Compute the log determinant explicitly so a changed spectrum remains valid.
         self._log_det_half = torch.log(self.s).sum()
         self._log_norm = -0.5 * dim * math.log(2.0 * math.pi) - self._log_det_half
 

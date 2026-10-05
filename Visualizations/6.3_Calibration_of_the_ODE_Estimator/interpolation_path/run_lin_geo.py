@@ -1,4 +1,4 @@
-"""Linear vs geometric ODE transport, 4 regimes. Standard config:"""
+"""Compare linear and geometric transport paths across four target regimes."""
 import sys as _sys
 import pathlib as _pl
 
@@ -33,7 +33,7 @@ PATHS = ["linear", "geometric"]
 JOBS = [(regime, path, s) for regime in REGIMES for path in PATHS for s in SEEDS]
 
 
-def cfg_for(regime, path, seed):
+def training_config(regime, path, seed):
     regime_config = REGIMES[regime]
     return RunConfig(
         target=regime_config["target"],
@@ -59,8 +59,8 @@ def cfg_for(regime, path, seed):
     )
 
 
-def one_job(regime, path, seed):
-    result = run(cfg_for(regime, path, seed))
+def run_training_job(regime, path, seed):
+    result = run(training_config(regime, path, seed))
     steps, checkpoints = (result.steps, result.checkpoints)
     cols = [c for c in ("step", "nfe", "grad_norm") if c in steps.columns]
     checkpoints = checkpoints.merge(
@@ -88,7 +88,7 @@ def one_job(regime, path, seed):
 def main():
     from gmvi.experiments.execution import run_training_jobs
 
-    run_training_jobs(JOBS, one_job, HERE, BASE, config_for=cfg_for)
+    run_training_jobs(JOBS, run_training_job, HERE, BASE, config_for=training_config)
 
 
 if __name__ == "__main__":

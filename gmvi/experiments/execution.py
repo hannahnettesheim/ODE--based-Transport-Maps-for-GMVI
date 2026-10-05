@@ -15,7 +15,7 @@ from gmvi.experiments.safe_io import atomic_json_dump, save_versioned
 
 @contextmanager
 def experiment_environment():
-    """Restore process-wide settings that formerly lived in separate workers."""
+    """Restore torch settings and the velocity implementation after a run."""
     import gmvi.estimators.ode_transport as transport
 
     dtype = torch.get_default_dtype()

@@ -21,11 +21,11 @@ try:
 
     S.setup()
     FIG = S.figsize(1.0, 0.42)
-    saver = lambda fig, n: S.save(fig, n, HERE)
+    save_figure = lambda fig, n: S.save(fig, n, HERE)
 except Exception:
     FIG = (11, 4.4)
 
-    def saver(fig, n):
+    def save_figure(fig, n):
         for e in ("pdf", "png"):
             fig.savefig(os.path.join(HERE, f"{n}.{e}"), bbox_inches="tight", dpi=150)
         plt.close(fig)
@@ -42,7 +42,6 @@ COL = {t: C[i] for i, t in enumerate(TOLS)}
 
 fig, (a0, a1) = plt.subplots(1, 2, figsize=FIG)
 
-# learning curves: -ELBO, log y
 for t in TOLS:
     g = st[st.solver_param == t].groupby("step").elbo
     med = (-g.median()).rolling(15, center=True, min_periods=1).median()
@@ -61,7 +60,6 @@ a0.set_ylim(
 a0.set_title(S.target_name("hier_k50", short=True) + ", dopri5 tol sweep")
 a0.legend(title="rtol=atol", fontsize=6, ncol=2, frameon=False)
 
-# NFE vs tolerance
 f1 = ck[ck.step == 1000].groupby("solver_param")[["nfe_mean", "nfe_max"]].mean()
 a1.plot(f1.index, f1.nfe_mean, "o-", label="mean")
 a1.plot(f1.index, f1.nfe_max, "x--", alpha=0.6, label="max")
@@ -72,7 +70,7 @@ a1.set_title("cost")
 a1.legend(fontsize=7, frameon=False)
 
 fig.subplots_adjust(wspace=0.32)
-saver(fig, "dopri_hier50_curves")
+save_figure(fig, "dopri_hier50_curves")
 
 print("\n=== D_KL(q||p) / NFE at step 1000 (mean / std over seeds) ===")
 g = (

@@ -24,7 +24,6 @@ from gmvi.models.generalized_mixture import GaussianMixture
 from gmvi.targets.distributions import Target, GaussianMixtureTarget
 from typing import Any as TrainResult  # type hint only; the old TrainResult
 
-# was replaced by trainer.RunResult
 
 
 COLORS = {
@@ -81,17 +80,14 @@ def plot_2d_approximation(
     xx, yy, grid = _make_grid(xlim, ylim, resolution)
 
     with torch.no_grad():
-        # Target density
         log_p = target.log_prob(grid).numpy().reshape(xx.shape)
         log_p -= log_p.max()
         p = np.exp(log_p)
 
-        # GMM density
         log_q = model.log_prob(grid).numpy().reshape(xx.shape)
         log_q -= log_q.max()
         q = np.exp(log_q)
 
-        # Samples from q
         z_samples, _ = model.sample(n_samples)
         z_samples = z_samples.numpy()
 
@@ -180,10 +176,8 @@ def plot_training_curves(
         n_steps = len(run_results[0].elbo_history)
         steps = np.arange(n_steps)
 
-        # Stack runs
         matrix = np.array([r.elbo_history for r in run_results])  # (runs, steps)
 
-        # Smooth
         def smooth(x, w):
             return np.convolve(x, np.ones(w) / w, mode="valid")
 
@@ -208,7 +202,6 @@ def plot_training_curves(
     ax_elbo.legend(fontsize=9)
     ax_elbo.grid(True, alpha=0.3)
 
-    # Per-step time comparison (box plots)
     times_data = []
     time_labels = []
     time_colors = []
@@ -260,7 +253,6 @@ def plot_comparison_summary(
         labels, means, yerr=stds, fmt="none", color="black", capsize=5, linewidth=2
     )
 
-    # Annotate values
     for bar, mean, std in zip(bars, means, stds):
         ax.text(
             bar.get_x() + bar.get_width() / 2,
@@ -295,7 +287,6 @@ def plot_all_2d(
     fig = plt.figure(figsize=(5 * (n_est + 1), 4))
     gs = gridspec.GridSpec(1, n_est + 1, figure=fig)
 
-    # Target in first column
     xx, yy, grid = _make_grid(xlim, ylim, resolution)
     with torch.no_grad():
         log_p = target.log_prob(grid).numpy().reshape(xx.shape)
